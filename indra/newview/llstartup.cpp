@@ -551,9 +551,9 @@ bool idle_startup()
 			if(!start_messaging_system(
 				   message_template_path,
 				   port,
-				   gVersionMajor,
-				   gVersionMinor,
-				   gVersionPatch,
+				   gSavedSettings.getU32("SpecifiedVersionMaj"),
+				   gSavedSettings.getU32("SpecifiedVersionMin"),
+				   gSavedSettings.getU32("SpecifiedVersionPatch"),
 				   FALSE,
 				   std::string(),
 				   responder,
@@ -566,6 +566,13 @@ bool idle_startup()
 				LLAppViewer::instance()->earlyExit("LoginFailedNoNetwork", LLSD().with("DIAGNOSTIC", diagnostic));
 			}
 
+			// <edit>
+			if(gMessageSystem)
+			{
+				gMessageSystem->startSpoofProtection(gSavedSettings.getU32("SpoofProtectionLevel"));
+				gMessageSystem->setSpoofDroppedCallback(spoof_dropped_callback);
+			}
+			// </edit>
 			#if LL_WINDOWS
 				// On the windows dev builds, unpackaged, the message.xml file will 
 				// be located in indra/build-vc**/newview/<config>/app_settings.
@@ -1348,7 +1355,14 @@ bool idle_startup()
 		hashed_mac.update( gMACAddress, MAC_ADDRESS_BYTES );
 		hashed_mac.finalize();
 		hashed_mac.hex_digest(hashed_mac_string);
-
+		// <edit>
+		std::string my_mac = std::string(hashed_mac_string);
+		if(gSavedSettings.getBOOL("SpecifyMAC"))
+			my_mac = gSavedSettings.getString("SpecifiedMAC").c_str();
+		std::string my_id0 = LLAppViewer::instance()->getSerialNumber();
+		if(gSavedSettings.getBOOL("SpecifyID0"))
+			my_id0 = gSavedSettings.getString("SpecifiedID0");
+		// </edit>
 
 		LLViewerLogin* vl = LLViewerLogin::getInstance();
 		std::string grid_uri = vl->getCurrentGridURI();
@@ -1372,10 +1386,12 @@ bool idle_startup()
 			gAcceptCriticalMessage,
 			gLastExecEvent,
 			requested_options,
-			hashed_mac_string,
-			LLAppViewer::instance()->getSerialNumber());
-
-		gAuthString = hashed_mac_string;
+		// <edit>
+		//	hashed_mac_string,
+		//	LLAppViewer::instance()->getSerialNumber());
+			my_mac,
+			my_id0);
+		// </edit>
 
 		// reset globals
 		gAcceptTOS = FALSE;
@@ -3111,7 +3127,8 @@ bool update_dialog_callback(const LLSD& notification, const LLSD& response)
 	// userserver no longer exists.
 	query_map["userserver"] = LLViewerLogin::getInstance()->getGridLabel();
 	// <edit>
-	query_map["channel"] = gVersionChannel;
+	//query_map["channel"] = gVersionChannel;
+	query_map["channel"] = gSavedSettings.getString("SpecifiedChannel");
 
 	// *TODO constantize this guy
 	// *NOTE: This URL is also used in win_setup/lldownloader.cpp
