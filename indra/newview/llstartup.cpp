@@ -551,9 +551,9 @@ bool idle_startup()
 			if(!start_messaging_system(
 				   message_template_path,
 				   port,
-				   gSavedSettings.getU32("SpecifiedVersionMaj"),
-				   gSavedSettings.getU32("SpecifiedVersionMin"),
-				   gSavedSettings.getU32("SpecifiedVersionPatch"),
+				   gVersionMajor,
+				   gVersionMinor,
+				   gVersionPatch,
 				   FALSE,
 				   std::string(),
 				   responder,
@@ -566,13 +566,7 @@ bool idle_startup()
 				LLAppViewer::instance()->earlyExit("LoginFailedNoNetwork", LLSD().with("DIAGNOSTIC", diagnostic));
 			}
 
-			// <edit>
-			if(gMessageSystem)
-			{
-				gMessageSystem->startSpoofProtection(gSavedSettings.getU32("SpoofProtectionLevel"));
-				gMessageSystem->setSpoofDroppedCallback(spoof_dropped_callback);
-			}
-			// </edit>
+		
 			#if LL_WINDOWS
 				// On the windows dev builds, unpackaged, the message.xml file will 
 				// be located in indra/build-vc**/newview/<config>/app_settings.
@@ -3127,8 +3121,7 @@ bool update_dialog_callback(const LLSD& notification, const LLSD& response)
 	// userserver no longer exists.
 	query_map["userserver"] = LLViewerLogin::getInstance()->getGridLabel();
 	// <edit>
-	//query_map["channel"] = gVersionChannel;
-	query_map["channel"] = gSavedSettings.getString("SpecifiedChannel");
+	query_map["channel"] = gVersionChannel;
 
 	// *TODO constantize this guy
 	// *NOTE: This URL is also used in win_setup/lldownloader.cpp
