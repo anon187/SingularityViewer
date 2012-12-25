@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- All our XML is utf-8 encoded. -->
+
+<!-- Floaters can optionally have their titlebar drag handle on the left.
+     If so, the title is not visible.
+     When a floater is resizable, a min_width and min_height must be specified. -->
+<floater
+	name="foo_floater"
+	title="Foo"
+	can_resize="true"
+	can_minimize="true"
+	can_close="true"
+	can_drag_on_left="false"
+	width="275"
+	height="250"
+	min_width="80"
+	min_height="220"
+	>
+
+<!--
+ By convention text fields are suffixed with _text.
+ Common fonts include SansSerif and SansSerifSmall. See LLFontGL::fontFromName for more.
+ Positions may be in absolute coordinates or as deltas.
+ bottom_delta = -40 indicates 40 pixels from the top edge.
+ follows indicates how the widget should move when the container is resized.
+-->
+
+	<text name="bar_text"
+		font="SansSerifSmall"
+		left="10"
+		bottom_delta="-40"
+		width="260"
+		height="16"
+                follows="left|top"
+		>
+bar is a generic programming identifier
+	</text>
+
+<!--
+  Line editor names end in _edit by convention.
+  mouse_opaque means it blocks mouse clicks, rather than passing on to underlying view
+  max_length is in bytes, not Unicode characters
+-->
+
+	<line_editor
+		name="baz_edit"
+		width="120"
+		height="20"
+		left="10"
+		bottom_delta="-30"
+		follows="left|bottom"
+		hidden="false"
+		mouse_opaque="true"
+		max_length="31"
+		font="SansSerif"
+		bevel_style="in"
+		border_style="line"
+		border_thickness="1"
+		select_all_on_focus_received="true"
+	/>
+
+<!--
+  Buttons are suffixed with _btn by convention.
+  Note there is no association with a callback function here - it must be connected
+  in the C++ code.
+  bottom_delta here means from the TOP of the last widget, not the bottom.
+-->
+
+	<button
+		name="hippo_btn"
+		label="Hippo"
+		font="SansSerifSmall"
+		left="10"
+		bottom_delta="-25"
+		width="100"
+		height="20"
+		follows="bottom|left"
+		/>
+</floater>

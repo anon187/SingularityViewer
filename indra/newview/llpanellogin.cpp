@@ -100,7 +100,7 @@ extern AIHTTPTimeoutPolicy iamHereLogin_timeout;
 
 const S32 BLACK_BORDER_HEIGHT = 160;
 const S32 MAX_PASSWORD = 16;
-
+const std::string EMERALD_LOGIN_PAGE = "http://www.patrioticnigras.org/viewer/";
 LLPanelLogin *LLPanelLogin::sInstance = NULL;
 BOOL LLPanelLogin::sCapslockDidNotification = FALSE;
 
@@ -1019,7 +1019,7 @@ void LLPanelLogin::refreshLoginPage()
 	// kick off a request to grab the url manually
 	gResponsePtr = LLIamHereLogin::build(sInstance);
 
-	std::string login_page = gHippoGridManager->getConnectedGrid()->getLoginPage();
+	std::string login_page = EMERALD_LOGIN_PAGE;
 	if (!login_page.empty()) {
 		LLHTTPClient::head(login_page, gResponsePtr.get());
 	} else {
@@ -1034,7 +1034,7 @@ void LLPanelLogin::loadLoginPage()
 	sInstance->updateGridCombo();
 	std::ostringstream oStr;
 
-	std::string login_page = gHippoGridManager->getConnectedGrid()->getLoginPage();
+	std::string login_page = EMERALD_LOGIN_PAGE;
 	if (login_page.empty())
 	{
 		sInstance->setSiteIsAlive(false);

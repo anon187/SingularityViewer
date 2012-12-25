@@ -149,7 +149,7 @@
 #include "llfloaterreporter.h"
 #include "llfloaterscriptdebug.h"
 #include "llfloatersettingsdebug.h"
-
+#include "llfloaterfoo.h"
 #include "llfloaterenvsettings.h"
 #include "llfloaterstats.h"
 #include "llfloaterteleport.h"
@@ -460,6 +460,70 @@ void set_current_pose(std::string anim)
 	current_pose.set(anim);
 	gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_START);
 }
+//<edit>//Pose Stand / undeform  ap
+void handle_undeform_avatar(void*)
+{
+	set_current_pose("44e98907-3764-119f-1c13-cba9945d2ff4");
+}
+void handle_pose_stand_ltao(void*)
+{
+	set_current_pose("331de97f-f317-c92f-602e-e90aab7400a7");
+}
+void handle_pose_stand_ltah(void*)
+{
+	set_current_pose("595ca54e-bf4b-3aae-b5e6-4caced52cea4");
+}
+void handle_pose_stand_ltad(void*)
+{
+	set_current_pose("d2447d24-64ce-d21f-f644-18854c8bbb12");
+}
+void handle_pose_stand_loau(void*)
+{
+	set_current_pose("d294a2f5-33bb-2835-7c21-a779a78df8e6");
+}
+void handle_pose_stand_loao(void*)
+{
+	set_current_pose("841c4c68-6069-2763-370c-66074a62d1d8");
+}
+void handle_pose_stand_shoop(void*)
+{
+	set_current_pose("269c524c-fd2d-c939-76d5-650a64799792");
+}
+void handle_pose_stand_lhao(void*)
+{
+	set_current_pose("62964ce3-399b-5d2f-5c00-c36120297f77");
+}
+void handle_pose_stand_fish(void*)
+{
+	set_current_pose("d30061b2-257b-993c-d0cc-f10ee40a8b2a");
+}
+void handle_pose_stand_jesus(void*)
+{
+	set_current_pose("bf021fa8-52b8-c018-cdba-897a633de2ec");
+}
+void handle_pose_stand_disco(void*)
+{
+	set_current_pose("35953eee-cfb9-5da0-ae82-d0584b677aef");
+}
+void handle_pose_stand_invisi(void*)
+{
+	set_current_pose("99e77e37-e07a-1c07-a2a0-e2414a0b06fe");
+}
+void handle_pose_stand_visi(void*)
+{
+	if (on_pose_stand)
+	{
+		gSavedSettings.setF32("AscentAvatarZModifier", gSavedSettings.getF32("AscentAvatarZModifier") - 7.5);
+		on_pose_stand = false;
+		gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_STOP);
+		current_pose = LLUUID::null;
+	}
+}
+void handle_pose_stand_tiny(void*)
+{
+	set_current_pose("370f3a20-6ca6-9971-848c-9a01bc42ae3c");
+}
+//</edit>
 void handle_pose_stand(void*)
 {
 	set_current_pose("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53");
@@ -623,7 +687,14 @@ public:
 	~LLMenuParcelObserver();
 	virtual void changed();
 };
-
+class LLToolsFoo : public view_listener_t
+{
+    bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+    {
+        LLFloaterFoo::show(NULL);
+        return true;
+    }
+};
 static LLMenuParcelObserver* gMenuParcelObserver = NULL;
 
 LLMenuParcelObserver::LLMenuParcelObserver()
@@ -801,7 +872,7 @@ void init_menus()
 	// TomY TODO convert these two
 	LLMenuGL*menu;
 
-	menu = new LLMenuGL("Singularity");
+	menu = new LLMenuGL("Stealthlife");
 	menu->setCanTearOff(TRUE);
 	menu->addChild(new LLMenuItemCallGL(	"Close All Dialogs", 
 										&handle_close_all_notifications, NULL, NULL, 'D', MASK_CONTROL | MASK_ALT | MASK_SHIFT));
@@ -810,6 +881,7 @@ void init_menus()
 	menu->addChild(new LLMenuItemCallGL(  "Force Ground Sit", &handle_force_ground_sit, NULL));
 	menu->addChild(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL, NULL, 'P', MASK_CONTROL | MASK_ALT));
 	menu->addSeparator();
+	menu->addChild(new LLMenuItemCallGL(  "Undeform Avatar", &handle_undeform_avatar, NULL));
 	menu->addChild(new LLMenuItemCallGL( "Animation Override...",
 									&handle_edit_ao, NULL));
 	menu->addChild(new LLMenuItemCheckGL( "Nimble",
@@ -831,25 +903,40 @@ void init_menus()
 											&handle_blacklist, NULL));
 	menu->addChild(new LLMenuItemCheckGL(  "Streaming Audio Display", 
 											&handle_ticker_toggle, &handle_ticker_enabled, &handle_singleton_check<SHFloaterMediaTicker>, NULL ));
-	
-	
+	menu->addSeparator();
+	menu->addChild(new LLMenuItemCallGL(	"Go Invisible", &handle_pose_stand_invisi, NULL));
+	menu->addChild(new LLMenuItemCallGL(	"Go Visible", &handle_pose_stand_visi, NULL));
+	//menu->addChild(new LLMenuItemCallGL(	"Go Tiny", &handle_pose_stand_tiny, NULL));
+
 	
 	// <dogmode>
 	// Add in the pose stand -------------------------------------------
-	/*LLMenuGL* sub = new LLMenuGL("Pose Stand...");
+	LLMenuGL* sub = new LLMenuGL("Lolz Animations...");
 	menu->addChild(sub);
 
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Out", &handle_pose_stand_ltao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Half", &handle_pose_stand_ltah, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Down", &handle_pose_stand_ltad, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Out Arms Up", &handle_pose_stand_loau, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Out Arms Out", &handle_pose_stand_loao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Half Arms Out", &handle_pose_stand_lhao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Stop Pose Stand", &handle_pose_stand_stop, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Givem Dick", &handle_pose_stand_ltao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Propeller", &handle_pose_stand_ltah, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Rave3", &handle_pose_stand_ltad, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Hurr4", &handle_pose_stand_loau, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Cradledance", &handle_pose_stand_loao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Headfuck ", &handle_pose_stand_lhao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "4d Shoop Da Woop", &handle_pose_stand_shoop, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Look, I'm a fish", &handle_pose_stand_fish, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Epileptic Jesus", &handle_pose_stand_jesus, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Disco Dance", &handle_pose_stand_disco, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Stop Animation", &handle_pose_stand_stop, NULL));
+	//sub->addChild(new LLMenuItemCallGL(	"Go Invisible", &handle_pose_stand_invisi, NULL));
+	//sub->addChild(new LLMenuItemCallGL(	"Go Tiny", &handle_pose_stand_tiny, NULL));
+
 	// </dogmode> ------------------------------------------------------*/
 	
 	menu->addChild(new LLMenuItemCheckGL("Pose Stand",&handle_toggle_pose, NULL, &handle_check_pose, NULL));
-
+	menu->addSeparator();
+	menu->addChild(new LLMenuItemCheckGL("God & Advanced Menus",
+										   &handle_toggle_hacked_godmode,
+										   NULL,
+										   &check_toggle_hacked_godmode,
+										   (void*)"HackedGodmode"));
 	//these should always be last in a sub menu
 	menu->createJumpKeys();
 	gMenuBarView->addChild( menu );
@@ -1850,7 +1937,6 @@ void cleanup_menus()
 
 	sMenus.clear();
 }
-
 //-----------------------------------------------------------------------------
 // Object pie menu
 //-----------------------------------------------------------------------------
@@ -2916,7 +3002,7 @@ class LLGoToObject : public view_listener_t
 };
 
 //---------------------------------------------------------------------------
-// Object backup
+// Object backup - IMPORT - EXPORT ap
 //---------------------------------------------------------------------------
 
 class LLObjectEnableExport : public view_listener_t
@@ -2925,30 +3011,6 @@ class LLObjectEnableExport : public view_listener_t
 	{
 		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
 		bool new_value = (object != NULL);
-		if (new_value)
-		{
-			struct ff : public LLSelectedNodeFunctor
-			{
-				ff(const LLSD& data) : LLSelectedNodeFunctor(), userdata(data)
-				{
-				}
-				const LLSD& userdata;
-				virtual bool apply(LLSelectNode* node)
-				{
-					// Note: the actual permission checking algorithm depends on the grid TOS and must be
-					// performed for each prim and texture. This is done later in llviewerobjectbackup.cpp.
-					// This means that even if the item is enabled in the menu, the export may fail should
-					// the permissions not be met for each exported asset. The permissions check below
-					// therefore only corresponds to the minimal permissions requirement common to all grids.
-					LLPermissions *item_permissions = node->mPermissions;
-					return (gAgent.getID() == item_permissions->getOwner() &&
-							(gAgent.getID() == item_permissions->getCreator() ||
-							 (item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED));
-				}
-			};
-			ff * the_ff = new ff(userdata);
-			new_value = LLSelectMgr::getInstance()->getSelection()->applyToNodes(the_ff, false);
-		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
@@ -2958,12 +3020,9 @@ class LLObjectExport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-		if (object)
-		{
-			LLObjectBackup::getInstance()->exportObject();
-		}
-		return true;
+		LLObjectBackup::getInstance()->exportObject();
+
+        return true;
 	}
 };
 
@@ -6901,8 +6960,6 @@ BOOL enable_buy_land(void*)
 				LLViewerParcelMgr::getInstance()->getParcelSelection()->getParcel(), false);
 }
 
-
-
 class LLObjectAttachToAvatar : public view_listener_t
 {
 public:
@@ -9470,6 +9527,7 @@ void initialize_menus()
 
 
 	// Tools menu
+	addMenu(new LLToolsFoo(), "Tools.Foo");
 	addMenu(new LLToolsSelectTool(), "Tools.SelectTool");
 	addMenu(new LLToolsSelectOnlyMyObjects(), "Tools.SelectOnlyMyObjects");
 	addMenu(new LLToolsSelectOnlyMovableObjects(), "Tools.SelectOnlyMovableObjects");
@@ -9527,7 +9585,7 @@ void initialize_menus()
 
 	 // Avatar pie menu
 
-
+	addMenu(new LLObjectExport(), "Avatar.Export");
 	addMenu(new LLObjectMute(), "Avatar.Mute");
 	addMenu(new LLAvatarAddFriend(), "Avatar.AddFriend");
 	addMenu(new LLAvatarFreeze(), "Avatar.Freeze");
@@ -9599,7 +9657,7 @@ void initialize_menus()
 	// Attachment pie menu
 	addMenu(new LLAttachmentDrop(), "Attachment.Drop");
 	addMenu(new LLAttachmentDetach(), "Attachment.Detach");
-
+	addMenu(new LLObjectEnableExport(), "Attachment.EnableExport");
 	addMenu(new LLAttachmentEnableDrop(), "Attachment.EnableDrop");
 	addMenu(new LLAttachmentEnableDetach(), "Attachment.EnableDetach");
 

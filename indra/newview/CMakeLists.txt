@@ -223,6 +223,7 @@ set(viewer_SOURCE_FILES
     llfloaternamedesc.cpp
     llfloaternewim.cpp
     llfloaternotificationsconsole.cpp
+	llfloaterfoo.cpp
     llfloaterobjectiminfo.cpp
     llfloateropenobject.cpp
     llfloateroutbox.cpp
@@ -748,6 +749,7 @@ set(viewer_HEADER_FILES
     llfloatersellland.h
     llfloatersettingsdebug.h
     llfloatersnapshot.h
+	llfloaterfoo.h
     llfloaterstats.h
     llfloatertelehub.h
     llfloaterteleporthistory.h

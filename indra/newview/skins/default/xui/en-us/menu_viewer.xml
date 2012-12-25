@@ -530,6 +530,13 @@
 		     mouse_opaque="true" name="Stop Animating My Avatar" width="250">
 			<on_click function="Tools.StopAllAnimations" userdata="" />
 		</menu_item_call>
+		<menu_item_call label="Foo" enabled="true" name="foo_menu">
+  <on_click function="Tools.Foo" userdata="" />
+</menu_item_call>
+    <menu_item_check bottom="-67" enabled="true" height="19" label="Block Spam" left="0" mouse_opaque="true" name="BlockSpam" shortcut="alt|shift|s" width="185">
+      <on_click function="Phoenix.ToggleBlockSpam" userdata="" />
+      <on_check function="Phoenix.CheckBlockSpam" userdata="" />
+    </menu_item_check>
 		<menu_item_call bottom="-213" enabled="false" height="19" label="Release Keys" left="0"
 		     mouse_opaque="true" name="Release Keys" width="250">
 			<on_click function="Tools.ReleaseKeys" userdata="" />

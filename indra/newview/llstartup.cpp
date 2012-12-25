@@ -2048,7 +2048,7 @@ bool idle_startup()
 	//---------------------------------------------------------------------
 	if (STATE_AGENT_SEND == LLStartUp::getStartupState())
 	{
-		LL_DEBUGS("AppInit") << "Connecting to region..." << LL_ENDL;
+		LL_DEBUGS("AppInit") << "Yayy we made it Connecting to region... I came ahhhh" << LL_ENDL;
 		set_startup_status(0.60f, LLTrans::getString("LoginConnectingToRegion"), gAgent.mMOTD);
 		display_startup();
 		// register with the message system so it knows we're

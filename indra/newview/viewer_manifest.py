@@ -588,7 +588,7 @@ class DarwinManifest(ViewerManifest):
                                  { 'viewer_binary' : self.dst_path_of('Contents/MacOS/'+self.app_name())})
 
     def app_name(self):
-        return "Singularity"
+        return "Stealthlife"
 
     def info_plist_name(self):
         return "Info-Singularity.plist"
@@ -725,7 +725,7 @@ class LinuxManifest(ViewerManifest):
         self.path("featuretable_linux.txt")
 
     def wrapper_name(self):
-        return 'singularity'
+        return 'stealthlife'
 
     def binary_name(self):
         return 'singularity-do-not-run-directly'

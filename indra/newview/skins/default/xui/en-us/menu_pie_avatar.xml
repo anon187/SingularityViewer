@@ -63,4 +63,9 @@
 	<menu_item_call enabled="false" label="Send IM..." mouse_opaque="true" name="Send IM...">
 		<on_click function="Avatar.SendIM" />
 	</menu_item_call>
+  <menu_item_call enabled="true" label="Export" mouse_opaque="true"
+        name="Object Export">
+    <on_click function="Object.Export" />
+    <on_enable function="Object.EnableExport" />
+  </menu_item_call>
 </pie_menu>

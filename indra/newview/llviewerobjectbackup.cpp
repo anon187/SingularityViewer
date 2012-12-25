@@ -96,8 +96,8 @@ static LLUUID LL_TEXTURE_MEDIA			= LLUUID("8b5fec65-8d8d-9dc5-cda8-8fdf2716e361"
 
 void setDefaultTextures()
 {
-	if (!gHippoGridManager->getConnectedGrid()->isSecondLife())
-	{
+	//if (!gHippoGridManager->getConnectedGrid()->isSecondLife())
+	//{
 		// When not in SL (no texture perm check needed), we can get these
 		// defaults from the user settings...
 		LL_TEXTURE_PLYWOOD = LLUUID(gSavedSettings.getString("DefaultObjectTexture"));
@@ -108,7 +108,7 @@ void setDefaultTextures()
 			// AllowInvisibleTextureInPicker patch)
 			LL_TEXTURE_INVISIBLE = LLUUID(gSavedSettings.getString("UIImgInvisibleUUID"));
 		}
-	}
+	//}
 }
 
 class importResponder: public LLNewAgentInventoryResponder
@@ -394,21 +394,18 @@ void LLObjectBackup::exportObject_continued(AIFilePicker* filepicker)
 	mExportState = EXPORT_INIT;
 	gIdleCallbacks.addFunction(exportWorker, NULL);
 }
+/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+This checks to see if you have full permissions, and are the owner and the
+creator of the object you want to export. This only applies to the Second
+Life grid. If you are not on the Second Life grid, then it checks to see if
+you are the owner and have full permissions. We will not bother and will
+modify it to always return that all our permissions are in order: ap
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 bool LLObjectBackup::validatePerms(const LLPermissions *item_permissions)
 {
-	if (gHippoGridManager->getConnectedGrid()->isSecondLife())
-	{
-		// In Second Life, you must be the creator to be permitted to export the asset.
-		return (gAgent.getID() == item_permissions->getOwner() &&
-				gAgent.getID() == item_permissions->getCreator());
-	}
-	else
-	{
-		// Out of Second Life, simply check that the asset is full perms.
-		return (gAgent.getID() == item_permissions->getOwner() &&
-				(item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED);
-	}
+	return true;
 }
 
 // So far, only Second Life forces TPVs to verify the creator for textures...
@@ -422,48 +419,7 @@ bool LLObjectBackup::validatePerms(const LLPermissions *item_permissions)
 // the textures in the Library), whoever is the actual creator... Go figure !
 LLUUID LLObjectBackup::validateTextureID(LLUUID asset_id)
 {
-	if (!gHippoGridManager->getConnectedGrid()->isSecondLife())
-	{
-		// If we are not in Second Life, don't bother.
-		return asset_id;
-	}
-	LLUUID texture = LL_TEXTURE_PLYWOOD;
-	if (asset_id == texture ||
-		asset_id == LL_TEXTURE_BLANK ||
-		asset_id == LL_TEXTURE_INVISIBLE ||
-		asset_id == LL_TEXTURE_TRANSPARENT ||
-		asset_id == LL_TEXTURE_MEDIA)
-	{
-		// Allow to export a few default SL textures.
-		return asset_id;
-	}
-	LLViewerInventoryCategory::cat_array_t cats;
-	LLViewerInventoryItem::item_array_t items;
-	LLAssetIDMatches asset_id_matches(asset_id);
-	gInventory.collectDescendentsIf(LLUUID::null,
-							cats,
-							items,
-							LLInventoryModel::INCLUDE_TRASH,
-							asset_id_matches);
-
-	if (items.count())
-	{
-		for (S32 i = 0; i < items.count(); i++)
-		{
-			const LLPermissions item_permissions = items[i]->getPermissions();
-			if (validatePerms(&item_permissions))
-			{
-				texture = asset_id;
-			}
-		}
-	}
-
-	if (texture != asset_id)
-	{
-		mNonExportedTextures |= TEXTURE_BAD_PERM;
-	}
-
-	return texture;
+	return asset_id;
 }
 
 void LLObjectBackup::exportWorker(void *userdata)
