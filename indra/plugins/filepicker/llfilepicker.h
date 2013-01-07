@@ -39,7 +39,7 @@
 #ifndef LL_LLFILEPICKER_H
 #define LL_LLFILEPICKER_H
 
-#include "C:\SingularityViewer\indra\plugins\base_basic\basic_plugin_base.h"		// For PLS_INFOS etc.
+#include "basic_plugin_base.h"		// For PLS_INFOS etc.
 #include "legacy.h"
 #include <vector>
 

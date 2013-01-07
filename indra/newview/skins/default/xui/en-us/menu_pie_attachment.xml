@@ -11,57 +11,42 @@
 		<on_click function="Object.Touch" />
 		<on_enable function="Object.EnableTouch" userdata="Touch" name="EnableTouch"/>
 	</menu_item_call>
-  <menu_item_call enabled="true" label="Sit Here" name="Self Sit Attachment">
-    <on_click function="Self.SitOrStand" userdata="" />
-    <on_enable function="Self.EnableSitOrStand" userdata="Sit Here,Stand Up" />
-  </menu_item_call>
+	<menu_item_call enabled="true" label="Stand Up" name="Stand Up">
+		<on_click function="Self.StandUp" userdata="" />
+		<on_enable function="Self.EnableStandUp" />
+	</menu_item_call>
 	<menu_item_call enabled="false" label="Detach" mouse_opaque="true" name="Detach">
 		<on_click function="Attachment.Detach" />
 		<on_enable function="Attachment.EnableDetach" />
 	</menu_item_call>
+	<pie_menu label="Tools &gt;" name="Tools &gt;">
+		<menu_item_call enabled="false" hidden="false" label="S. Count" mouse_opaque="true" name="ScriptCount">
+			<on_click function="Object.ScriptCount" />
+			<on_visible function="Object.VisibleScriptCount" />
+		</menu_item_call>
+		<menu_item_call enabled="true" label="Inspect" mouse_opaque="true" name="Object Inspect">
+			<on_click function="Object.Inspect" />
+			<on_enable function="Object.EnableInspect"/>
+		</menu_item_call>
+		<menu_item_call enabled="false" label="Data" mouse_opaque="true" name="Data">
+    		<on_click function="Object.Data" />
+		</menu_item_call>
+		<menu_item_call enabled="true" label="Derender" mouse_opaque="true" name="Derender">
+			<on_click function="Object.DERENDER" />
+			<on_enable function="Object.EnableDerender" />
+		</menu_item_call>
+	</pie_menu>
 	<menu_item_call enabled="true" label="Appearance..." name="Appearance...">
 		<on_click function="ShowFloater" userdata="appearance" />
 		<on_enable function="Edit.EnableCustomizeAvatar" />
 	</menu_item_call>
-  <pie_menu label="Tools &gt;" name="Tools &gt;">
-    <menu_item_call enabled="true" label="Copy UUID" mouse_opaque="true" name="CopyUUID">
-      <on_click function="Avatar.CopyUUID" />
-    </menu_item_call>
-    <menu_item_call enabled="true" label="Inspect" mouse_opaque="true" name="Object Inspect">
-      <on_click function="Object.Inspect" />
-      <on_enable function="Object.EnableInspect" />
-    </menu_item_call>
-    <menu_item_call enabled="false" hidden="false" label="S. Count" mouse_opaque="true" name="ScriptCount">
-      <on_click function="Object.ScriptCount" />
-      <on_visible function="Object.VisibleScriptCount" />
-    </menu_item_call>
-    <menu_item_call enabled="false" label="Reset Scripts" mouse_opaque="true" name="Reset Scripts">
-      <on_click function="Tools.SelectedScriptAction" userdata="reset" />
-      <on_enable function="EditableSelected" />
-    </menu_item_call>
-    <menu_item_call enabled="false" label="Data" mouse_opaque="true" name="Data">
-      <on_click function="Object.Data" />
-    </menu_item_call>
-    <menu_item_call enabled="true" hidden="false" label="Anims..." mouse_opaque="true" name="Avatar Animations">
-      <on_click function="Avatar.Anims" />
-    </menu_item_call>
-    <pie_menu label="Save &gt;" name="Save &gt;">
-      <menu_item_call enabled="false" hidden="false" label="Save As..." mouse_opaque="true"
-               name="Save As...">
-        <on_click function="Object.SaveAs" />
-        <on_enable function="Object.EnableSaveAs" />
-      </menu_item_call>
-      <menu_item_call enabled="true" hidden="false" label="Save OBJ..." mouse_opaque="true"
-                name="Save OBJ...">
-        <on_click function="Object.SaveAsOBJ" />
-      </menu_item_call>
-    </pie_menu>
-    <menu_item_call enabled="true" label="HUDs" mouse_opaque="true" name="Attachments">
-      <on_click function="Avatar.AttachmentList" />
-    </menu_item_call>
-  </pie_menu>
 	<menu_item_call enabled="false" label="Edit..." mouse_opaque="true" name="Edit...">
 		<on_click function="Object.Edit" />
 		<on_enable function="EnableEdit" />
 	</menu_item_call>
+  <menu_item_call enabled="true" label="Export" mouse_opaque="true"
+        name="Object Export">
+    <on_click function="Object.Export" />
+    <on_enable function="Object.EnableExport" />
+  </menu_item_call>
 </pie_menu>

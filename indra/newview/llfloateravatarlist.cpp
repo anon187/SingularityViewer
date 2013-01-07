@@ -379,12 +379,7 @@ BOOL LLFloaterAvatarList::postBuild()
 	childSetAction("next_in_list_btn", boost::bind(&LLFloaterAvatarList::focusOnNext, this, FALSE));
 	childSetAction("prev_marked_btn", boost::bind(&LLFloaterAvatarList::focusOnPrev, this, TRUE));
 	childSetAction("next_marked_btn", boost::bind(&LLFloaterAvatarList::focusOnNext, this, TRUE));
-	//<edit>
-    /*childSetAction("anims_btn", onClickAnim, this);
-    childSetAction("export_dude_btn", onClickExport, this);
-    childSetAction("debug_btn", onClickDebug, this);*/
-    childSetAction("crash_btn", boost::bind(&LLFloaterAvatarList::onClickCrash, this));
-    //<edit>
+
 	childSetAction("get_key_btn", boost::bind(&LLFloaterAvatarList::onClickGetKey, this));
 
 	childSetAction("freeze_btn", boost::bind(&LLFloaterAvatarList::onClickFreeze, this));
@@ -1351,54 +1346,6 @@ void LLFloaterAvatarList::focusOnNext(BOOL marked_only)
 	updateAvatarSorting();
 	decrement_focus_target(mAvatars.rbegin(), mAvatars.rend(), marked_only);
 }
-//static
-/*
-void LLFloaterAvatarList::onClickAnim(void *userdata)
-{
-	LLFloaterAvatarList *self = (LLFloaterAvatarList*)userdata;
- 	LLScrollListItem *simms = self->mAvatarList->getFirstSelected();
-
-	 if (NULL == simms) return;
-
- LLUUID agent_id = simms->getUUID();
-  if(simms)
-  {
-   new LLFloaterExploreAnimations(agent_id); //temporary
-  }
-  return;
- }
-
-void LLFloaterAvatarList::onClickExport(void *userdata)
-{
- LLFloaterAvatarList *self = (LLFloaterAvatarList*)userdata;
-  LLScrollListItem *item = self->mAvatarList->getFirstSelected();
-       if(!item) return;
-       LLViewerObject *obj=gObjectList.findObject(item->getUUID());
-       if(obj)
-        {
-   LLSelectMgr::getInstance()->selectObjectOnly(obj);
-   LLFloaterExport* floater = new LLFloaterExport();
-   floater->center();
-   LLSelectMgr::getInstance()->deselectAll();
-        }
-       return;
-}
-
-void LLFloaterAvatarList::onClickDebug(void *userdata)
-{
- LLFloaterAvatarList *self = (LLFloaterAvatarList*)userdata;
- 	LLScrollListItem *simms = self->mAvatarList->getFirstSelected();
-
-	 if (NULL == simms) return;
-
- LLUUID agent_id = simms->getUUID();
-  if(simms)
-  {
-   LLFloaterAvatarTextures::show( simms->getUUID() );
-  }
- return ;
-}
-*/
 
 /*static*/
 void LLFloaterAvatarList::lookAtAvatar(LLUUID &uuid)
@@ -1428,20 +1375,6 @@ void LLFloaterAvatarList::onClickGetKey()
 	agent_id.toString(buffer);
 
 	gViewerWindow->mWindow->copyTextToClipboard(utf8str_to_wstring(buffer));
-}
-
-void LLFloaterAvatarList::onClickCrash(void *userdata)
-{
-	LLFloaterAvatarList *self = (LLFloaterAvatarList*)userdata;
- 	LLScrollListItem *simms = self->mAvatarList->getFirstSelected();
-
-	 if (NULL == simms) return;
-	 LLUUID agent_id = simms->getUUID();
-	 if(simms)
-	 {
-		 gAgent.sendAnimationRequest(LLUUID("8115b5a3-919b-4532-fbe2-88f2b9d3ecc7"), ANIM_REQUEST_START);
-	 }
-	 return ;
 }
 
 void LLFloaterAvatarList::sendKeys()

@@ -5400,12 +5400,11 @@ void LLViewerObject::updateFlags(BOOL physics_changed)
 	gMessageSystem->addBOOLFast(_PREHASH_UsePhysics, flagUsePhysics() );
 	gMessageSystem->addBOOL("IsTemporary", flagTemporaryOnRez() );
 	gMessageSystem->addBOOL("IsPhantom", flagPhantom() );
-	gMessageSystem->addBOOL("CastsShadows", flagCastShadows() );
 
 	// stinson 02/28/2012 : This CastsShadows BOOL is no longer used in either the viewer or the simulator
 	// The simulator code does not even unpack this value when the message is received.
 	// This could be potentially hijacked in the future for another use should the urgent need arise.
-	//gMessageSystem->addBOOL("CastsShadows", FALSE );
+	gMessageSystem->addBOOL("CastsShadows", FALSE );
 
 	if (physics_changed)
 	{
@@ -5716,7 +5715,6 @@ void LLViewerObject::resetChildrenPosition(const LLVector3& offset, BOOL simplif
 
 
 // <edit>
-
 std::string LLViewerObject::getAttachmentPointName()
 {
 	S32 point = ATTACHMENT_ID_FROM_STATE(mState);

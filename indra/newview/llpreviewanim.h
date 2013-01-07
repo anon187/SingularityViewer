@@ -48,8 +48,6 @@ public:
 					const LLUUID& object_uuid = LLUUID::null);
 
 	static void playAnim( void* userdata );
-	//static void dupliAnim( void* userdata );
-	//static void exportasdotAnim( void *userdata );
 	static void auditionAnim( void* userdata );
 	// <edit>
 	/*
@@ -66,10 +64,8 @@ public:
 									   void* user_data, S32 status, LLExtStat ext_status);
 	static void gotAssetForSave_continued(char* buffer, S32 size, AIFilePicker* filepicker);
 	static void copyAnimID(void* userdata);
-	static void exportAnim( void* userdate );
 	// </edit>
 	static void endAnimCallback( void *userdata );
-	static void downloadCompleteCallback(LLVFS *vfs, const LLUUID& uuid, LLAssetType::EType type, void *user, S32 result, LLExtStat extstat);
 	/*virtual*/	BOOL postBuild();
 	void activate(e_activation_type type);
 
@@ -88,8 +84,6 @@ protected:
 	LLUUID		mObjectID;
 	LLButton*	mPlayBtn;
 	LLButton*	mAuditionBtn;
-	U8*			mAnimBuffer;
-	S32			mAnimBufferSize;
 	bool		mIsCopyable;
 };
 

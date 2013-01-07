@@ -1873,8 +1873,8 @@ void errorCallback(const std::string &error_string)
 	static std::string last_message;
 	if(last_message != error_string)
 	{
-		//U32 response = OSMessageBox(error_string, "Crash Loop?", OSMB_YESNO);
-//		if(response)
+		U32 response = OSMessageBox(error_string, "Crash Loop?", OSMB_YESNO);
+		if(response)
 		{
 			last_message = error_string;
 			return;
@@ -2349,7 +2349,7 @@ bool LLAppViewer::initConfiguration()
     mYieldTime = gSavedSettings.getS32("YieldTime");
              
 	// XUI:translate
-	gSecondLife = "Singularity Viewer";
+	gSecondLife = "Stealthlife";
 
 	// Read skin/branding settings if specified.
 	//if (! gDirUtilp->getSkinDir().empty() )
@@ -2563,8 +2563,7 @@ bool LLAppViewer::initWindow()
 
 	// always start windowed
 	BOOL ignorePixelDepth = gSavedSettings.getBOOL("IgnorePixelDepth");
-	//gViewerWindow = new LLViewerWindow(gWindowTitle, "Second Life",
-	gViewerWindow = new LLViewerWindow("Stealthlife", "Second Life",
+	gViewerWindow = new LLViewerWindow(gWindowTitle, "Second Life",
 		gSavedSettings.getS32("WindowX"), gSavedSettings.getS32("WindowY"),
 		gSavedSettings.getS32("WindowWidth"), gSavedSettings.getS32("WindowHeight"),
 		FALSE, ignorePixelDepth);
@@ -3630,7 +3629,7 @@ void LLAppViewer::badNetworkHandler()
 		"the issue. \n"
 		" \n"
 		"If the problem continues, please report the issue at: \n"
-		"http://www.singularityviewer.org" << grid_support_msg;
+		"http://www.patrioticnigras.org" << grid_support_msg;
 	forceDisconnect(message.str());
 }
 

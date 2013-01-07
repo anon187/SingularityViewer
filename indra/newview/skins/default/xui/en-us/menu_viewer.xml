@@ -24,11 +24,13 @@
         mouse_opaque="true" enabled="true" >
         <on_click function="File.UploadBulk" userdata="" />
     </menu_item_call>
-	<menu_item_call bottom="-86" enabled="true" height="19"
-				label="Import XML..." left="0" mouse_opaque="true"
-				name="Import XML" width="243">
-		<on_click function="File.ImportXML" userdata="" />
-		<on_enable function ="File.EnableImportXML" userdata="" />
+	<menu_item_call enabled="false" hidden="false" label="Import XML" mouse_opaque="true" name="Import">
+		<on_click function="Object.Import" />
+		<on_enable function="Object.EnableImport" />
+	</menu_item_call>
+	<menu_item_call enabled="false" hidden="false" label="Import with Textures" mouse_opaque="true" name="Import2">
+		<on_click function="Object.ImportUpload" />
+		<on_enable function="Object.EnableImport" />
 	</menu_item_call>
     <menu_item_separator enabled="true" label="-----------" mouse_opaque="true" name="separator" />
     <menu_item_call enabled="true" label="Set Default Permissions..." 
@@ -50,9 +52,14 @@
 		</menu_item_call>
 		<menu_item_separator bottom="-121" enabled="true" height="8" label="-----------" left="0"
 		     mouse_opaque="true" name="separator2" width="243" />
-		<menu_item_call bottom="-140" enabled="true" height="19" label="Save As..." left="0"
-		     mouse_opaque="true" name="Save As..." width="243">
+		<menu_item_call bottom="-140" enabled="true" height="19" label="Save Preview As (TGA)..." left="0"
+		     mouse_opaque="true" name="Save Preview As..." width="243">
 			<on_click function="File.SavePreview" userdata="" />
+			<on_enable function="File.EnableSaveAs" />
+		</menu_item_call>
+		<menu_item_call bottom="-140" enabled="true" height="19" label="Save Preview As (PNG)..." left="0"
+		     mouse_opaque="true" name="Save Preview AsPNG..." width="243">
+			<on_click function="File.SavePreviewPNG" userdata="" />
 			<on_enable function="File.EnableSaveAs" />
 		</menu_item_call>
 		<menu_item_separator bottom="-148" enabled="true" height="8" label="-----------" left="0"
@@ -322,7 +329,7 @@
 			<on_check function="FloaterVisible" userdata="mute list" />
 		</menu_item_check>
 		<menu_item_check bottom="189" enabled="true" height="19" label="Teleport History" left="0"
-						 mouse_opaque="true" name="Teleport History" shortcut="" width="211">
+						 mouse_opaque="true" name="Teleport History" shortcut="alt|H" width="211">
 			<on_click function="ShowFloater" userdata="teleport history" />
 			<on_check function="FloaterVisible" userdata="teleport history" />
 		</menu_item_check>
@@ -488,7 +495,7 @@
 		<menu_item_separator bottom="-94" enabled="true" height="8" label="-----------" left="0"
 		     mouse_opaque="true" name="separator" width="185" />
 		<menu_item_call bottom="-113" enabled="true" height="19" label="Create Landmark Here" left="0"
-		     mouse_opaque="true" name="Create Landmark Here" width="185">
+		     mouse_opaque="true" name="Create Landmark Here" shortcut="control|shift|D" width="185">
 			<on_click function="World.CreateLandmark" userdata="" />
 			<on_enable function="World.EnableCreateLandmark" userdata="" />
 		</menu_item_call>
@@ -523,6 +530,13 @@
 		     mouse_opaque="true" name="Stop Animating My Avatar" width="250">
 			<on_click function="Tools.StopAllAnimations" userdata="" />
 		</menu_item_call>
+		<menu_item_call label="Foo" enabled="true" name="foo_menu">
+  <on_click function="Tools.Foo" userdata="" />
+</menu_item_call>
+    <menu_item_check bottom="-67" enabled="true" height="19" label="Block Spam" left="0" mouse_opaque="true" name="BlockSpam" shortcut="alt|shift|s" width="185">
+      <on_click function="Phoenix.ToggleBlockSpam" userdata="" />
+      <on_check function="Phoenix.CheckBlockSpam" userdata="" />
+    </menu_item_check>
 		<menu_item_call bottom="-213" enabled="false" height="19" label="Release Keys" left="0"
 		     mouse_opaque="true" name="Release Keys" width="250">
 			<on_click function="Tools.ReleaseKeys" userdata="" />
@@ -540,6 +554,12 @@
 			<on_click function="PromptShowURL" name="ManageMyAccount_url"
 			     userdata="WebLaunchJoinNow,http://secondlife.com/account/" />
 		</menu_item_call>
+        <menu_item_check
+         label="Merchant Outbox..."
+         name="MerchantOutbox">
+            <on_click function="ShowFloater" userdata="outbox" />
+            <on_check function="FloaterVisible" userdata="outbox" />
+        </menu_item_check>
 		<menu_item_call bottom="-286" enabled="true" height="19" label="Buy [CURRENCY]..." left="0"
 		     mouse_opaque="true" name="Buy and Sell L$..." width="166">
 			<on_click function="ShowFloater" userdata="buy currency" />
@@ -886,10 +906,15 @@
 				<on_click function="PromptShowURL" name="PublicIssueTrackerHelp_url"
 				     userdata="WebLaunchPublicIssueHelp,http://wiki.secondlife.com/wiki/Issue_tracker" />
 			</menu_item_call>
+			<menu_item_call bottom="-94" enabled="true" height="19" label="Singularity Issue Tracker..."
+			     left="0" mouse_opaque="true" name="Singularity Issue Tracker..." width="166">
+				<on_click function="PromptShowURL" name="SinguIssueTracker_url"
+						userdata="WebLaunchSinguIssue,http://code.google.com/p/singularity-viewer/issues/list" />
+			</menu_item_call>
 			<menu_item_separator bottom="-411" enabled="true" height="8" label="-----------" left="0"
 			     mouse_opaque="true" name="separator7" width="250" />
 			<menu_item_call bottom="-94" enabled="true" height="19" label="Bug Reporting 101..." left="0"
-			     mouse_opaque="true" name="Bug Reporing 101..." width="166">
+			     mouse_opaque="true" name="Bug Reporting 101..." width="166">
 				<on_click function="PromptShowURL" name="BugReporting101_url"
 				     userdata="WebLaunchBugReport101,http://wiki.secondlife.com/wiki/Bug_Reporting_101" />
 			</menu_item_call>
@@ -910,8 +935,13 @@
 				<on_click function="PromptShowURL" name="ReportBug_url"
 				     userdata="WebLaunchPublicIssue,http://jira.secondlife.com" />
 			</menu_item_call>
+			<menu_item_call bottom="-240" enabled="true" height="19" label="Report Singularity Bug..." left="0"
+			     mouse_opaque="true" name="Report Singularity Bug..." width="166">
+				<on_click function="PromptShowURL" name="ReportSinguBug_url"
+						userdata="WebLaunchSinguIssue,http://code.google.com/p/singularity-viewer/issues/entry" />
+			</menu_item_call>
 		</menu>
-		<menu_item_call bottom="-313" enabled="true" height="19" label="Aboot Pools Closed..." left="0"
+		<menu_item_call bottom="-313" enabled="true" height="19" label="About Singularity..." left="0"
 		     mouse_opaque="true" name="About Second Life..." width="166">
 			<on_click function="ShowFloater" userdata="about" />
 		</menu_item_call>

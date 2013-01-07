@@ -241,7 +241,6 @@ BOOL	LLPanelObject::postBuild()
 		}
 	}
 	*/
-
 	for(U8 mcode = 0; mcode < 0x10; mcode++)
 	{
 		mComboMaterial->add(LLMaterialTable::basic.getName(mcode));

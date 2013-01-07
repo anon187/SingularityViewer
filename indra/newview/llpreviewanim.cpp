@@ -39,18 +39,14 @@
 #include "llinventory.h"
 #include "llvoavatarself.h"
 #include "llagent.h"          // gAgent
-#include "C:\SingularityViewer\indra\plugins\filepicker\llfilepicker.h"
 #include "llkeyframemotion.h"
 #include "statemachine/aifilepicker.h"
 #include "lllineeditor.h"
 #include "lluictrlfactory.h"
 #include "lluictrlfactory.h"
 // <edit>
-#include "llviewermenufile.h"
 #include "llviewerwindow.h" // for alert
 #include "llappviewer.h" // gStaticVFS
-#include "llassetstorage.h"
-#include "tsbvhexporter.h"
 // </edit>
 
 extern LLAgent gAgent;
@@ -61,28 +57,6 @@ LLPreviewAnim::LLPreviewAnim(const std::string& name, const LLRect& rect, const 
 	mIsCopyable = false;
 	setTitle(title);
 	LLUICtrlFactory::getInstance()->buildFloater(this,"floater_preview_animation.xml");
-	// <edit>
-	childSetAction("Anim play btn",playAnim,this);
-	childSetAction("Anim audition btn",auditionAnim,this);
-	childSetAction("Anim copy uuid btn", copyAnimID, this);
-	
-	//childSetAction("Anim remake btn",dupliAnim,this);
-	//childSetAction("Anim export btn",exportAnim,this);
-
-	//childSetAction("Anim .anim btn",exportasdotAnim,this);
-
-	childSetEnabled("Anim remake btn", FALSE);
-	childSetEnabled("Anim export btn", TRUE);
-	childSetEnabled("Anim .anim btn", TRUE);
-	mAnimBuffer = NULL;
-
-	const LLInventoryItem* item = getItem();
-	
-	childSetCommitCallback("desc", LLPreview::onText, this);
-	childSetText("desc", item->getDescription());
-	childSetPrevalidate("desc", &LLLineEditor::prevalidatePrintableNotPipe);
-	// </edit>
-	setTitle(title);
 	if (!getHost())
 	{
 		LLRect curRect = getRect();
@@ -90,24 +64,6 @@ LLPreviewAnim::LLPreviewAnim(const std::string& name, const LLRect& rect, const 
 	}
 	activate(_activate);
 }
-void LLPreviewAnim::downloadCompleteCallback(LLVFS *vfs, const LLUUID& uuid, LLAssetType::EType type, void *userdata, S32 result, LLExtStat extstat)
-{
-	LLHandle<LLFloater>* handlep = ((LLHandle<LLFloater>*)userdata);
-	LLPreviewAnim* self = (LLPreviewAnim*)handlep->get();
-	delete handlep; // done with the handle
-	if (self)
-	{
-		if(result == LL_ERR_NOERR) {
-			self->childSetEnabled("Anim remake btn", TRUE);
-			self->childSetEnabled("Anim export btn", TRUE);
-			self->childSetEnabled("Anim .anim btn", TRUE);
-			self->mAnimBufferSize = vfs->getSize(uuid, type);
-			self->mAnimBuffer = new U8[self->mAnimBufferSize];
-			vfs->getData(uuid, type, self->mAnimBuffer, 0, self->mAnimBufferSize);
-		}
-	}
-}
-
 
 // static
 void LLPreviewAnim::endAnimCallback( void *userdata )
@@ -237,8 +193,53 @@ void LLPreviewAnim::auditionAnim( void *userdata )
 
 // <edit>
 // static
-
 /*
+void LLPreviewAnim::copyAnim(void *userdata)
+{
+	LLPreviewAnim* self = (LLPreviewAnim*) userdata;
+	const LLInventoryItem *item = self->getItem();
+
+	if(item)
+	{
+		// Some animations aren't hosted on the servers
+		// I guess they're in this static vfs thing
+		bool static_vfile = false;
+		LLVFile* anim_file = new LLVFile(gStaticVFS, item->getAssetUUID(), LLAssetType::AT_ANIMATION);
+		if (anim_file && anim_file->getSize())
+		{
+			//S32 anim_file_size = anim_file->getSize();
+			//U8* anim_data = new U8[anim_file_size];
+			//if(anim_file->read(anim_data, anim_file_size))
+			//{
+			//	static_vfile = true;
+			//}
+			static_vfile = true; // for method 2
+			LLPreviewAnim::gotAssetForCopy(gStaticVFS, item->getAssetUUID(), LLAssetType::AT_ANIMATION, self, 0, 0);
+		}
+		delete anim_file;
+		anim_file = NULL;
+		
+		if(!static_vfile)
+		{
+			// Get it from the servers
+			gAssetStorage->getAssetData(item->getAssetUUID(), LLAssetType::AT_ANIMATION, LLPreviewAnim::gotAssetForCopy, self, TRUE);
+		}
+	}
+}
+
+struct LLSaveInfo
+{
+	LLSaveInfo(const LLUUID& item_id, const LLUUID& object_id, const std::string& desc,
+				const LLTransactionID tid)
+		: mItemUUID(item_id), mObjectUUID(object_id), mDesc(desc), mTransactionID(tid)
+	{
+	}
+
+	LLUUID mItemUUID;
+	LLUUID mObjectUUID;
+	std::string mDesc;
+	LLTransactionID mTransactionID;
+};
 
 // static
 void LLPreviewAnim::gotAssetForCopy(LLVFS *vfs,

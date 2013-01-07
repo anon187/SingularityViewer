@@ -447,9 +447,14 @@ BOOL LLFloaterTexturePicker::postBuild()
 	LLFloater::postBuild();
 	
 	// <dogmode>
-
-	childSetValue("texture_uuid", mImageAssetID);
-
+	/**
+	LLInventoryItem* itemp = gInventory.getItem(mImageAssetID);
+	
+	if (itemp && (itemp->getPermissions().getMaskOwner() & PERM_ALL))
+		childSetValue("texture_uuid", mImageAssetID);
+	else
+		childSetValue("texture_uuid", LLUUID::null.asString());
+	**/
 	if (!mLabel.empty())
 	{
 		std::string pick = getString("pick title");

@@ -239,12 +239,7 @@ public:
 	LLUUID getSelectedID();
 
 	static void lookAtAvatar(LLUUID &uuid);
-		//edit 
-    /*static void onClickAnim(void *userdata);
-    static void onClickExport(void *userdata);
-    static void onClickDebug(void *userdata);*/
-    static void onClickCrash(void *userdata);
-    //edit
+
 	static void sound_trigger_hook(LLMessageSystem* msg,void **);
 	void sendKeys();
 
@@ -333,7 +328,6 @@ private:
 	static bool onConfirmRadarChatKeys(const LLSD& notification, const LLSD& response );
 
 	static void callbackIdle(void *userdata);
-
 
 	void doCommand(avlist_command_t cmd, bool single = false);
 

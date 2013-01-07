@@ -49,7 +49,6 @@
 #include "llimagebmp.h"
 #include "llimagepng.h"
 #include "llimagejpeg.h"
-#include "llimportobject.h"
 #include "llinventorymodel.h"	// gInventory
 #include "llresourcedata.h"
 #include "llfloaterperms.h"
@@ -66,7 +65,6 @@
 #include "lltrans.h"
 #include "llfloaterbuycurrency.h"
 // <edit>
-#include "llfloaterimport.h"
 #include "llselectmgr.h"
 #include "llassettype.h"
 #include "llinventorytype.h"
@@ -420,39 +418,7 @@ class LLFileUploadBulk : public view_listener_t
 		}
 	}
 };
-// <edit>
-class LLFileImportXML : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		AIFilePicker* filepicker = AIFilePicker::create();
-		filepicker->open(FFLOAD_XML, "", "openfile");
-		filepicker->run(boost::bind(&LLFileImportXML::callback, filepicker));		
-		return true;
-	}
-private:
-	static void callback(AIFilePicker* filepicker)
-	{
-		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports
-		{
-			std::string file_name = filepicker->getFilename();
-			new LLFloaterXmlImportOptions(new LLXmlImportOptions(file_name));
-		}
-	}
-};
 
-class LLFileEnableImportXML : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		bool new_value = !LLXmlImport::sImportInProgress;
-
-		// horrendously opaque, this code
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
-		return true;
-	}
-};
-// </edit>
 void upload_error(const std::string& error_message, const std::string& label, const std::string& filename, const LLSD& args) 
 {
 	llwarns << error_message << llendl;
@@ -1361,10 +1327,6 @@ void init_menu_file()
 	(new LLFileUploadSound())->registerListener(gMenuHolder, "File.UploadSound");
 	(new LLFileUploadAnim())->registerListener(gMenuHolder, "File.UploadAnim");
 	(new LLFileUploadBulk())->registerListener(gMenuHolder, "File.UploadBulk");
-	// <edit>
-	(new LLFileImportXML())->registerListener(gMenuHolder, "File.ImportXML");
-	(new LLFileEnableImportXML())->registerListener(gMenuHolder, "File.EnableImportXML");
-	// </edit>
 	(new LLFileCloseWindow())->registerListener(gMenuHolder, "File.CloseWindow");
 	(new LLFileCloseAllWindows())->registerListener(gMenuHolder, "File.CloseAllWindows");
 	(new LLFileEnableCloseWindow())->registerListener(gMenuHolder, "File.EnableCloseWindow");
