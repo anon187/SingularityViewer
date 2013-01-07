@@ -566,7 +566,7 @@ void LLAppViewerWin32::handleSyncCrashTrace()
 }
 
 void LLAppViewerWin32::handleCrashReporting(bool reportFreeze)
-{
+{/*
 	const char* logger_name = "win_crash_logger.exe";
 	std::string exe_path = gDirUtilp->getExecutableDir();
 	exe_path += gDirUtilp->getDirDelimiter();
@@ -589,6 +589,7 @@ void LLAppViewerWin32::handleCrashReporting(bool reportFreeze)
 			_spawnl(_P_NOWAIT, exe_path.c_str(), arg_str, NULL);
 		}
 	}
+	*/
 }
 
 //virtual
