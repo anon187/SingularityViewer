@@ -196,8 +196,9 @@ set(viewer_SOURCE_FILES
     llfloaterevent.cpp
     llfloaterexploreanimations.cpp
     llfloaterexploresounds.cpp
-    llfloaterfriends.cpp
+    llfloaterfeed.cpp
     llfloaterfonttest.cpp
+    llfloaterfriends.cpp
     llfloatergesture.cpp
     llfloatergodtools.cpp
     llfloatergroupinfo.cpp
@@ -302,6 +303,7 @@ set(viewer_SOURCE_FILES
     lllogchat.cpp
     llloginhandler.cpp
     llmainlooprepeater.cpp
+    llmakeoutfitdialog.cpp
     llmanip.cpp
     llmaniprotate.cpp
     llmanipscale.cpp
@@ -704,6 +706,7 @@ set(viewer_HEADER_FILES
     llfloaterexploreanimations.h
     llfloaterexploresounds.h
     llfloaterevent.h
+    llfloaterfeed.h
     llfloaterfonttest.h
     llfloaterfriends.h
     llfloatergesture.h
@@ -810,6 +813,7 @@ set(viewer_HEADER_FILES
     lllogchat.h
     llloginhandler.h
     llmainlooprepeater.h
+    llmakeoutfitdialog.h
     llmanip.h
     llmaniprotate.h
     llmanipscale.h

@@ -196,6 +196,7 @@
 	<string name="AvatarAway">Away</string>
 	<string name="AvatarBusy">Busy</string>
 	<string name="AvatarMuted">Muted</string>
+	<string name="AvatarLangolier">Langolier</string>
 
 	<!-- animations -->
 	<string name="anim_express_afraid">Afraid</string>
@@ -2945,6 +2946,9 @@ Where tag = tag string to match.  Removes bot's matching the tag.
 	<string name="CurrentlySetTo">Currently set to: [ITEM]</string>
 	<string name="CurrentlySetToAnItemNotOnThisAccount">Currently set to an item not on this account</string>
 	<string name="NotLoggedIn">Not logged in</string>
+
+    <!-- Non-standard LLChat strings -->
+    <string name="took_a_snapshot">took a snapshot</string>
 
   <!-- Avatar busy/away mode -->
 	<string name="AvatarSetNotAway">Not Away</string>
