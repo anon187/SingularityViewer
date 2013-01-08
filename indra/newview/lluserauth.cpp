@@ -131,13 +131,36 @@ void LLUserAuth::authenticate(
 	XMLRPC_VectorAppendString(params, "last", lastname.c_str(), 0);
 	XMLRPC_VectorAppendString(params, "web_login_key", web_login_key.getString().c_str(), 0);
 	XMLRPC_VectorAppendString(params, "start", start.c_str(), 0);
-	XMLRPC_VectorAppendString(params, "version", gCurrentVersion.c_str(), 0); // Includes channel name
-	XMLRPC_VectorAppendString(params, "channel", gVersionChannel, 0);
+	// <edit>
+        //XMLRPC_VectorAppendString(params, "version", gCurrentVersion.c_str(), 0); // Includes channel name
+        //XMLRPC_VectorAppendString(params, "channel", gSavedSettings.getString("VersionChannelName").c_str(), 0);
+        
+        //WOW NEIL YOU ARE SO AWESOME!!
+        
+        XMLRPC_VectorAppendString(params, "version", std::string(
+                gSavedSettings.getString("SpecifiedChannel") + " " +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionMaj")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionMin")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionPatch")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionBuild"))
+        ).c_str(), 0); // Includes channel name
+        
+        XMLRPC_VectorAppendString(params, "channel", gSavedSettings.getString("SpecifiedChannel").c_str(), 0);
+        // </edit>
 	XMLRPC_VectorAppendString(params, "platform", PLATFORM_STRING, 0);
+	// <edit>
+        if(gSavedSettings.getBOOL("SpecifyMAC"))
+                XMLRPC_VectorAppendString(params, "mac", gSavedSettings.getString("SpecifiedMAC").c_str(), 0);
+        else
+        // </edit>
 
 	XMLRPC_VectorAppendString(params, "mac", hashed_mac.c_str(), 0);
 	// A bit of security through obscurity: id0 is volume_serial
-
+	// <edit>
+        if(gSavedSettings.getBOOL("SpecifyID0"))
+                XMLRPC_VectorAppendString(params, "id0", gSavedSettings.getString("SpecifiedID0").c_str(), 0);
+        else
+        // </edit>
 	XMLRPC_VectorAppendString(params, "id0", hashed_volume_serial.c_str(), 0);
 	if (skip_optional)
 	{
@@ -217,14 +240,35 @@ void LLUserAuth::authenticate(
 	XMLRPC_VectorAppendString(params, "last", lastname.c_str(), 0);
 	XMLRPC_VectorAppendString(params, "passwd", dpasswd.c_str(), 0);
 	XMLRPC_VectorAppendString(params, "start", start.c_str(), 0);
-	XMLRPC_VectorAppendString(params, "version", gCurrentVersion.c_str(), 0); // Includes channel name
-	XMLRPC_VectorAppendString(params, "channel", gVersionChannel, 0);
+	// <edit>
+        //XMLRPC_VectorAppendString(params, "version", gCurrentVersion.c_str(), 0); // Includes channel name
+        //XMLRPC_VectorAppendString(params, "channel", gSavedSettings.getString("VersionChannelName").c_str(), 0);
+        
+        //WOW NEIL YOU ARE SO AWESOME!!
+        
+        XMLRPC_VectorAppendString(params, "version", std::string(
+                gSavedSettings.getString("SpecifiedChannel") + " " +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionMaj")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionMin")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionPatch")) + "." +
+                llformat("%d", gSavedSettings.getU32("SpecifiedVersionBuild"))
+        ).c_str(), 0); // Includes channel name
+        
+        XMLRPC_VectorAppendString(params, "channel", gSavedSettings.getString("SpecifiedChannel").c_str(), 0);
+        // </edit>
 	XMLRPC_VectorAppendString(params, "platform", PLATFORM_STRING, 0);
-
+	// <edit>
+        if(gSavedSettings.getBOOL("SpecifyMAC"))
+                XMLRPC_VectorAppendString(params, "mac", gSavedSettings.getString("SpecifiedMAC").c_str(), 0);
+        else
+        // </edit>
 	XMLRPC_VectorAppendString(params, "mac", hashed_mac.c_str(), 0);
 	// A bit of security through obscurity: id0 is volume_serial
-	// ^^^^^^^^^^^^^^^^^^^^
-	// you fucking idiot - charbl
+	// <edit>
+        if(gSavedSettings.getBOOL("SpecifyID0"))
+                XMLRPC_VectorAppendString(params, "id0", gSavedSettings.getString("SpecifiedID0").c_str(), 0);
+        else
+        // </edit>
 
 	XMLRPC_VectorAppendString(params, "id0", hashed_volume_serial.c_str(), 0);
 	if (skip_optional)
@@ -323,16 +367,7 @@ LLUserAuth::UserAuthcode LLUserAuth::parseResponse()
 	// will all be string => string pairs.
 	UserAuthcode rv = E_UNHANDLED_ERROR;
 	XMLRPC_REQUEST response = mResponder->response();
-	if(!response)
-	{
-		U32 status = mResponder->http_status();
-		// Is it an HTTP error?
-		if (!(200 <= status && status < 400))
-		{
-			rv = E_HTTP_SERVER_ERROR;
-		}
-		return rv;
-	}
+	if(!response) return rv;
 
 	// clear out any old parsing
 	mResponses.clear();

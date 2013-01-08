@@ -566,6 +566,7 @@ bool idle_startup()
 				LLAppViewer::instance()->earlyExit("LoginFailedNoNetwork", LLSD().with("DIAGNOSTIC", diagnostic));
 			}
 
+		
 			#if LL_WINDOWS
 				// On the windows dev builds, unpackaged, the message.xml file will 
 				// be located in indra/build-vc**/newview/<config>/app_settings.
@@ -757,6 +758,9 @@ bool idle_startup()
 			// We have at least some login information on a SLURL
 			firstname = gLoginHandler.getFirstName();
 			lastname = gLoginHandler.getLastName();
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 			web_login_key = gLoginHandler.getWebLoginKey();
 
 			// Show the login screen if we don't have everything
@@ -768,6 +772,9 @@ bool idle_startup()
             LLSD cmd_line_login = gSavedSettings.getLLSD("UserLoginInfo");
 			firstname = cmd_line_login[0].asString();
 			lastname = cmd_line_login[1].asString();
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 
 			LLMD5 pass((unsigned char*)cmd_line_login[2].asString().c_str());
 			char md5pass[33];               /* Flawfinder: ignore */
@@ -785,6 +792,9 @@ bool idle_startup()
 		{
 			firstname = gSavedSettings.getString("FirstName");
 			lastname = gSavedSettings.getString("LastName");
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 			password = LLStartUp::loadPasswordFromDisk();
 			gSavedSettings.setBOOL("RememberPassword", TRUE);
 			
@@ -800,6 +810,9 @@ bool idle_startup()
 			// a valid grid is selected
 			firstname = gSavedSettings.getString("FirstName");
 			lastname = gSavedSettings.getString("LastName");
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 			password = LLStartUp::loadPasswordFromDisk();
 			show_connect_box = true;
 		}
@@ -883,6 +896,9 @@ bool idle_startup()
 			else
 			{
 				LLPanelLogin::setFields(firstname, lastname, password);
+				// <edit>
+				gFullName = utf8str_tolower(firstname + " " + lastname);
+				// </edit>
 				LLPanelLogin::giveFocus();
 			}
 			display_startup();
@@ -954,6 +970,9 @@ bool idle_startup()
 		{
 			firstname = gLoginHandler.getFirstName();
 			lastname = gLoginHandler.getLastName();
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 			web_login_key = gLoginHandler.getWebLoginKey();
 		}
 				
@@ -972,20 +991,14 @@ bool idle_startup()
 		{
 			gSavedSettings.setString("FirstName", firstname);
 			gSavedSettings.setString("LastName", lastname);
+			// <edit>
+			gFullName = utf8str_tolower(firstname + " " + lastname);
+			// </edit>
 			if (!gSavedSettings.controlExists("RememberLogin")) gSavedSettings.declareBOOL("RememberLogin", false, "Remember login", false);
 			gSavedSettings.setBOOL("RememberLogin", LLPanelLogin::getRememberLogin());
 
 			LL_INFOS("AppInit") << "Attempting login as: " << firstname << " " << lastname << LL_ENDL;
 			gDebugInfo["LoginName"] = firstname + " " + lastname;	
-		}
-		else
-		{
-			// User tried to login on a non-SecondLife grid with an empty lastname.
-			LLSD subs;
-			subs["GRIDNAME"] = gHippoGridManager->getConnectedGrid()->getGridName();
-			LLNotificationsUtil::add(firstname.empty() ? "EmptyFirstNameMessage" : "EmptyLastNameMessage", subs);
-			LLStartUp::setStartupState(STATE_LOGIN_SHOW);
-			return FALSE;
 		}
 
 		LLScriptEdCore::parseFunctions("lsl_functions_sl.xml");	//Singu Note: This parsing function essentially replaces the entirety of the lscript_library library
@@ -1064,7 +1077,7 @@ bool idle_startup()
 		gSavedSettings.getControl("_NACL_AntiSpamAmount")->getSignal()->connect(boost::bind(&NACLAntiSpamRegistry::handleNaclAntiSpamAmountChanged, _2));
         // NaCl End
 
-		//good a place as any to create user windlight directories
+		//good as place as any to create user windlight directories
 		std::string user_windlight_path_name(gDirUtilp->getExpandedFilename( LL_PATH_USER_SETTINGS , "windlight", ""));
 		LLFile::mkdir(user_windlight_path_name.c_str());		
 
@@ -1336,7 +1349,14 @@ bool idle_startup()
 		hashed_mac.update( gMACAddress, MAC_ADDRESS_BYTES );
 		hashed_mac.finalize();
 		hashed_mac.hex_digest(hashed_mac_string);
-
+		// <edit>
+		std::string my_mac = std::string(hashed_mac_string);
+		if(gSavedSettings.getBOOL("SpecifyMAC"))
+			my_mac = gSavedSettings.getString("SpecifiedMAC").c_str();
+		std::string my_id0 = LLAppViewer::instance()->getSerialNumber();
+		if(gSavedSettings.getBOOL("SpecifyID0"))
+			my_id0 = gSavedSettings.getString("SpecifiedID0");
+		// </edit>
 
 		LLViewerLogin* vl = LLViewerLogin::getInstance();
 		std::string grid_uri = vl->getCurrentGridURI();
@@ -1360,10 +1380,12 @@ bool idle_startup()
 			gAcceptCriticalMessage,
 			gLastExecEvent,
 			requested_options,
-			hashed_mac_string,
-			LLAppViewer::instance()->getSerialNumber());
-
-		gAuthString = hashed_mac_string;
+		// <edit>
+		//	hashed_mac_string,
+		//	LLAppViewer::instance()->getSerialNumber());
+			my_mac,
+			my_id0);
+		// </edit>
 
 		// reset globals
 		gAcceptTOS = FALSE;
@@ -1420,6 +1442,7 @@ bool idle_startup()
 			LL_DEBUGS("AppInit") << "downloading..." << LL_ENDL;
 			return FALSE;
 		}
+		Debug(if (gCurlIo) dc::curlio.off());		// Login succeeded: restore dc::curlio to original state.
 		LLStartUp::setStartupState( STATE_LOGIN_PROCESS_RESPONSE );
 		progress += 0.01f;
 		set_startup_status(progress, LLTrans::getString("LoginProcessingResponse"), auth_message);
@@ -1456,7 +1479,6 @@ bool idle_startup()
 			{
 				// Yay, login!
 				successful_login = true;
-				Debug(if (gCurlIo) dc::curlio.off());		// Login succeeded: restore dc::curlio to original state.
 			}
 			else
 			{
@@ -1536,12 +1558,13 @@ bool idle_startup()
 				}
 			}
 			break;
+		case LLUserAuth::E_COULDNT_RESOLVE_HOST:
+		case LLUserAuth::E_SSL_PEER_CERTIFICATE:
+		case LLUserAuth::E_UNHANDLED_ERROR:
+		case LLUserAuth::E_SSL_CACERT:
+		case LLUserAuth::E_SSL_CONNECT_ERROR:
 		default:
-		  {
-			static int http_failures = 0;
-			http_failures = (error == LLUserAuth::E_HTTP_SERVER_ERROR) ? http_failures + 1 : 0;
-			if ((error == LLUserAuth::E_HTTP_SERVER_ERROR && http_failures <= 3) ||
-				LLViewerLogin::getInstance()->tryNextURI())
+			if (LLViewerLogin::getInstance()->tryNextURI())
 			{
 				static int login_attempt_number = 0;
 				std::ostringstream s;
@@ -1556,7 +1579,6 @@ bool idle_startup()
 				emsg << "Unable to connect to " << gHippoGridManager->getCurrentGrid()->getGridName() << ".\n";
 				emsg << LLUserAuth::getInstance()->errorMessage();
 			}
-		  }
 			break;
 		}
 
@@ -4087,6 +4109,9 @@ bool process_login_success_response(std::string& password)
 	if(!text.empty()) lastname.assign(text);
 	gSavedSettings.setString("FirstName", firstname);
 	gSavedSettings.setString("LastName", lastname);
+	// <edit>
+	gFullName = utf8str_tolower(firstname + " " + lastname);
+	// </edit>
 
 	if (gSavedSettings.getBOOL("RememberPassword"))
 	{

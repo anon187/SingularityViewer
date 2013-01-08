@@ -63,7 +63,10 @@
 #include "llsdserialize.h"
 #include "llsdutil.h"
 // <edit>
+#include "llvoavatar.h"
 #include "lllocalinventory.h"
+#include "llfloaterimport.h"
+#include "llfloaterexport.h"
 #include "llfloaterexploreanimations.h"
 #include "llfloaterexploresounds.h"
 #include "llfloaterblacklist.h"
@@ -149,7 +152,6 @@
 #include "llfloaterreporter.h"
 #include "llfloaterscriptdebug.h"
 #include "llfloatersettingsdebug.h"
-
 #include "llfloaterenvsettings.h"
 #include "llfloaterstats.h"
 #include "llfloaterteleport.h"
@@ -178,16 +180,14 @@
 #include "llinventorypanel.h"
 #include "llinventorybridge.h"
 #include "llkeyboard.h"
-#include "llmakeoutfitdialog.h"
+#include "llpanellogin.h"
 #include "llmenucommands.h"
 #include "llmenugl.h"
 #include "llmimetypes.h"
 #include "llmorphview.h"
-#include "llmenuoptionpathfindingrebakenavmesh.h"
 #include "llmoveview.h"
 #include "llmutelist.h"
 #include "llnotify.h"
-#include "llpanellogin.h"
 #include "llpanelobject.h"
 
 #include "llparcel.h"
@@ -250,9 +250,11 @@
 
 // <edit>
 #include "hgfloatertexteditor.h"
+#include "llfloaterattachments.h"
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
 #include "llfloatermessagelog.h"
+#include "lleventtimer.h"
 #include "shfloatermediaticker.h"
 #include "llpacketring.h"
 // </edit>
@@ -418,6 +420,7 @@ BOOL check_show_xui_names(void *);
 // Debug UI
 void handle_web_search_demo(void*);
 void handle_web_browser_test(void*);
+void handle_web_browser_irc(void*);
 void handle_buy_currency_test(void*);
 void handle_save_to_xml(void*);
 void handle_load_from_xml(void*);
@@ -445,6 +448,7 @@ void handle_singleton_toggle(void *)
 // <edit>
 void handle_fake_away_status(void*);
 void handle_area_search(void*);
+void handle_media_filter(void*);
 
 // <dogmode> for pose stand
 LLUUID current_pose = LLUUID::null;
@@ -462,6 +466,70 @@ void set_current_pose(std::string anim)
 	current_pose.set(anim);
 	gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_START);
 }
+//<edit>//Pose Stand / undeform  ap
+void handle_undeform_avatar(void*)
+{
+	set_current_pose("44e98907-3764-119f-1c13-cba9945d2ff4");
+}
+void handle_pose_stand_ltao(void*)
+{
+	set_current_pose("331de97f-f317-c92f-602e-e90aab7400a7");
+}
+void handle_pose_stand_ltah(void*)
+{
+	set_current_pose("595ca54e-bf4b-3aae-b5e6-4caced52cea4");
+}
+void handle_pose_stand_ltad(void*)
+{
+	set_current_pose("d2447d24-64ce-d21f-f644-18854c8bbb12");
+}
+void handle_pose_stand_loau(void*)
+{
+	set_current_pose("d294a2f5-33bb-2835-7c21-a779a78df8e6");
+}
+void handle_pose_stand_loao(void*)
+{
+	set_current_pose("841c4c68-6069-2763-370c-66074a62d1d8");
+}
+void handle_pose_stand_shoop(void*)
+{
+	set_current_pose("269c524c-fd2d-c939-76d5-650a64799792");
+}
+void handle_pose_stand_lhao(void*)
+{
+	set_current_pose("62964ce3-399b-5d2f-5c00-c36120297f77");
+}
+void handle_pose_stand_fish(void*)
+{
+	set_current_pose("d30061b2-257b-993c-d0cc-f10ee40a8b2a");
+}
+void handle_pose_stand_jesus(void*)
+{
+	set_current_pose("bf021fa8-52b8-c018-cdba-897a633de2ec");
+}
+void handle_pose_stand_disco(void*)
+{
+	set_current_pose("35953eee-cfb9-5da0-ae82-d0584b677aef");
+}
+void handle_pose_stand_invisi(void*)
+{
+	set_current_pose("99e77e37-e07a-1c07-a2a0-e2414a0b06fe");
+}
+void handle_pose_stand_visi(void*)
+{
+	if (on_pose_stand)
+	{
+		gSavedSettings.setF32("AscentAvatarZModifier", gSavedSettings.getF32("AscentAvatarZModifier") - 7.5);
+		on_pose_stand = false;
+		gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_STOP);
+		current_pose = LLUUID::null;
+	}
+}
+void handle_pose_stand_tiny(void*)
+{
+	set_current_pose("370f3a20-6ca6-9971-848c-9a01bc42ae3c");
+}
+//</edit>
 void handle_pose_stand(void*)
 {
 	set_current_pose("038fcec9-5ebd-8a8e-0e2e-6e71a0a1ac53");
@@ -597,7 +665,16 @@ void handle_mesh_save_obj(void*);
 void handle_mesh_load_obj(void*);
 void handle_morph_save_obj(void*);
 void handle_morph_load_obj(void*);
+//void save_avatar_to_obj(LLVOAvatar *avatar);
+//void save_selected_avatar_to_obj();
+//void save_selected_objects_to_obj();
+void save_world_to_obj();
+//void save_wavefront_continued(WavefrontSaver* wfsaver, AIFilePicker* filepicker);
+//void handle_save_current_avatar_obj(void*);
+void handle_mesh_save_world_obj(void*);
 void handle_debug_avatar_textures(void*);
+void handle_grab_texture(void*);
+BOOL enable_grab_texture(void*);
 void handle_dump_region_object_cache(void*);
 
 BOOL menu_ui_enabled(void *user_data);
@@ -625,7 +702,6 @@ public:
 	~LLMenuParcelObserver();
 	virtual void changed();
 };
-
 static LLMenuParcelObserver* gMenuParcelObserver = NULL;
 
 LLMenuParcelObserver::LLMenuParcelObserver()
@@ -803,7 +879,7 @@ void init_menus()
 	// TomY TODO convert these two
 	LLMenuGL*menu;
 
-	menu = new LLMenuGL("Singularity");
+	menu = new LLMenuGL("Stealthlife");
 	menu->setCanTearOff(TRUE);
 	menu->addChild(new LLMenuItemCallGL(	"Close All Dialogs", 
 										&handle_close_all_notifications, NULL, NULL, 'D', MASK_CONTROL | MASK_ALT | MASK_SHIFT));
@@ -812,6 +888,9 @@ void init_menus()
 	menu->addChild(new LLMenuItemCallGL(  "Force Ground Sit", &handle_force_ground_sit, NULL));
 	menu->addChild(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL, NULL, 'P', MASK_CONTROL | MASK_ALT));
 	menu->addSeparator();
+	menu->addChild(new LLMenuItemCallGL(  "Media Filter", &handle_media_filter, NULL));
+	menu->addSeparator();
+	menu->addChild(new LLMenuItemCallGL(  "Undeform Avatar", &handle_undeform_avatar, NULL));
 	menu->addChild(new LLMenuItemCallGL( "Animation Override...",
 									&handle_edit_ao, NULL));
 	menu->addChild(new LLMenuItemCheckGL( "Nimble",
@@ -833,25 +912,47 @@ void init_menus()
 											&handle_blacklist, NULL));
 	menu->addChild(new LLMenuItemCheckGL(  "Streaming Audio Display", 
 											&handle_ticker_toggle, &handle_ticker_enabled, &handle_singleton_check<SHFloaterMediaTicker>, NULL ));
-	
-	
+	menu->addSeparator();
+	menu->addChild(new LLMenuItemCallGL(	"Go Invisible", &handle_pose_stand_invisi, NULL));
+	menu->addChild(new LLMenuItemCallGL(	"Go Visible", &handle_pose_stand_visi, NULL));
+	//menu->addChild(new LLMenuItemCallGL(	"Go Tiny", &handle_pose_stand_tiny, NULL));
+	menu->addChild(new LLMenuItemCallGL("IRC", &handle_web_browser_irc));
+
 	
 	// <dogmode>
 	// Add in the pose stand -------------------------------------------
-	/*LLMenuGL* sub = new LLMenuGL("Pose Stand...");
+	LLMenuGL* sub = new LLMenuGL("Lolz Animations...");
 	menu->addChild(sub);
 
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Out", &handle_pose_stand_ltao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Half", &handle_pose_stand_ltah, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Together Arms Down", &handle_pose_stand_ltad, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Out Arms Up", &handle_pose_stand_loau, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Out Arms Out", &handle_pose_stand_loao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Legs Half Arms Out", &handle_pose_stand_lhao, NULL));
-	sub->addChild(new LLMenuItemCallGL(  "Stop Pose Stand", &handle_pose_stand_stop, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Givem Dick", &handle_pose_stand_ltao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Propeller", &handle_pose_stand_ltah, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Rave3", &handle_pose_stand_ltad, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Hurr4", &handle_pose_stand_loau, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Cradledance", &handle_pose_stand_loao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Headfuck ", &handle_pose_stand_lhao, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "4d Shoop Da Woop", &handle_pose_stand_shoop, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Look, I'm a fish", &handle_pose_stand_fish, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Epileptic Jesus", &handle_pose_stand_jesus, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Disco Dance", &handle_pose_stand_disco, NULL));
+	sub->addChild(new LLMenuItemCallGL(  "Stop Animation", &handle_pose_stand_stop, NULL));
+	//sub->addChild(new LLMenuItemCallGL(	"Go Invisible", &handle_pose_stand_invisi, NULL));
+	//sub->addChild(new LLMenuItemCallGL(	"Go Tiny", &handle_pose_stand_tiny, NULL));
+
 	// </dogmode> ------------------------------------------------------*/
 	
 	menu->addChild(new LLMenuItemCheckGL("Pose Stand",&handle_toggle_pose, NULL, &handle_check_pose, NULL));
-
+	/*menu->addChild(new LLMenuItemCallGL(	"Save Entire Avatar OBJ",
+										&handle_save_current_avatar_obj, NULL, NULL, 'X', MASK_CONTROL | MASK_ALT | MASK_SHIFT));
+	menu->addChild(new LLMenuItemCallGL(	"Save World OBJ",
+										&handle_mesh_save_world_obj, NULL, NULL, 'W', MASK_CONTROL | MASK_ALT | MASK_SHIFT));*/
+	menu->addSeparator();
+	menu->addChild(new LLMenuItemCheckGL("God & Advanced Menus",
+										   &handle_toggle_hacked_godmode,
+										   NULL,
+										   &check_toggle_hacked_godmode,
+										   (void*)"HackedGodmode"));
+	menu->addChild(new LLMenuItemCallGL("Advanced Menu",
+										   &toggle_debug_menus, NULL));
 	//these should always be last in a sub menu
 	menu->createJumpKeys();
 	gMenuBarView->addChild( menu );
@@ -1852,7 +1953,6 @@ void cleanup_menus()
 
 	sMenus.clear();
 }
-
 //-----------------------------------------------------------------------------
 // Object pie menu
 //-----------------------------------------------------------------------------
@@ -2918,62 +3018,54 @@ class LLGoToObject : public view_listener_t
 };
 
 //---------------------------------------------------------------------------
-// Object backup
+// Object backup - IMPORT - EXPORT ap
+//---------------------------------------------------------------------------
+//---------------------------------------------------------------------------
+// Object import / export
 //---------------------------------------------------------------------------
 
-class LLObjectEnableExport : public view_listener_t
+class LLObjectEnableSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
 		bool new_value = (object != NULL);
-		if (new_value)
-		{
-			struct ff : public LLSelectedNodeFunctor
-			{
-				ff(const LLSD& data) : LLSelectedNodeFunctor(), userdata(data)
-				{
-				}
-				const LLSD& userdata;
-				virtual bool apply(LLSelectNode* node)
-				{
-					// Note: the actual permission checking algorithm depends on the grid TOS and must be
-					// performed for each prim and texture. This is done later in llviewerobjectbackup.cpp.
-					// This means that even if the item is enabled in the menu, the export may fail should
-					// the permissions not be met for each exported asset. The permissions check below
-					// therefore only corresponds to the minimal permissions requirement common to all grids.
-					LLPermissions *item_permissions = node->mPermissions;
-					return (gAgent.getID() == item_permissions->getOwner() &&
-							(gAgent.getID() == item_permissions->getCreator() ||
-							 (item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED));
-				}
-			};
-			ff * the_ff = new ff(userdata);
-			new_value = LLSelectMgr::getInstance()->getSelection()->applyToNodes(the_ff, false);
-		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
 
-class LLObjectExport : public view_listener_t
+class LLObjectSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-		if (object)
-		{
-			LLObjectBackup::getInstance()->exportObject();
-		}
+		LLFloaterExport* floater = new LLFloaterExport();
+		floater->center();
 		return true;
 	}
 };
+
 
 class LLObjectEnableImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(TRUE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
@@ -2982,19 +3074,42 @@ class LLObjectImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLObjectBackup::getInstance()->importObject(FALSE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		if(new_value == false) return true;
+		
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(FFLOAD_XML, "", "openfile");
+		filepicker->run(boost::bind(&LLObjectImport::callback, filepicker, object));
 		return true;
+	}
+private:
+	static void callback(AIFilePicker* filepicker, LLViewerObject* object)
+	{
+		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports
+		{
+			std::string file_name = filepicker->getFilename();
+			LLXmlImportOptions* options = new LLXmlImportOptions(file_name);
+			options->mSupplier = object;
+			new LLFloaterXmlImportOptions(options);
+		}
 	}
 };
 
-class LLObjectImportUpload : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		LLObjectBackup::getInstance()->importObject(TRUE);
-		return true;
-	}
-};
+
 
 //---------------------------------------------------------------------------
 // Parcel freeze, eject, etc.
@@ -3296,6 +3411,9 @@ class LLAvatarCopyUUID : public view_listener_t
 		if(!avatar) return true;
 		
 		LLUUID uuid = avatar->getID();
+		//ap
+		//chat.mText = llformat("uuid: "+uuid.asString());
+		//ap
 		char buffer[UUID_STR_LENGTH];		/*Flawfinder: ignore*/
 		uuid.toString(buffer);
 		gViewerWindow->mWindow->copyTextToClipboard(utf8str_to_wstring(buffer));
@@ -3596,6 +3714,11 @@ void handle_dump_focus(void *)
 	LLUICtrl *ctrl = dynamic_cast<LLUICtrl*>(gFocusMgr.getKeyboardFocus());
 
 	llinfos << "Keyboard focus " << (ctrl ? ctrl->getName() : "(none)") << llendl;
+}
+
+void handle_media_filter(void*)
+{
+	SLFloaterMediaFilter::toggleInstance();
 }
 
 class LLSelfSitOrStand : public view_listener_t
@@ -5329,39 +5452,6 @@ class LLToolsEnablePathfindingView : public view_listener_t
 	}
 };
 
-class LLToolsDoPathfindingRebakeRegion : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		bool hasPathfinding = (LLPathfindingManager::getInstance() != NULL);
-
-		if (hasPathfinding)
-		{
-			LLMenuOptionPathfindingRebakeNavmesh::getInstance()->sendRequestRebakeNavmesh();
-		}
-
-		return hasPathfinding;
-	}
-};
-
-class LLToolsEnablePathfindingRebakeRegion : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		bool returnValue = false;
-
-		if (LLPathfindingManager::getInstance() != NULL)
-		{
-			LLMenuOptionPathfindingRebakeNavmesh *rebakeInstance = LLMenuOptionPathfindingRebakeNavmesh::getInstance();
-			returnValue = (rebakeInstance->canRebakeRegion() &&
-				(rebakeInstance->getMode() == LLMenuOptionPathfindingRebakeNavmesh::kRebakeNavMesh_Available));
-			
-		}
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(returnValue);
-		return returnValue;
-	}
-};
-
 // Round the position of all root objects to the grid
 class LLToolsSnapObjectXY : public view_listener_t
 {
@@ -6300,6 +6390,26 @@ class LLAvatarInviteToGroup : public view_listener_t
 	}
 };
 
+/*//ap
+class LLAvatarSaveAsOBJ : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		save_selected_avatar_to_obj();
+		return true;
+	}
+};
+
+class LLSelectionSaveAsOBJ : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		save_selected_objects_to_obj();
+		return true;
+	}
+};
+//ap*/
+
 class LLAvatarAddFriend : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -6524,10 +6634,6 @@ class LLShowFloater : public view_listener_t
 			{
 				gAgentCamera.changeCameraToCustomizeAvatar();
 			}
-		}
-		else if (floater_name == "outfit")
-		{
-			new LLMakeOutfitDialog(false);
 		}
 		// Phoenix: Wolfspirit: Enabled Show Floater out of viewer menu
 		else if (floater_name == "displayname")
@@ -6939,8 +7045,6 @@ BOOL enable_buy_land(void*)
 	return LLViewerParcelMgr::getInstance()->canAgentBuyParcel(
 				LLViewerParcelMgr::getInstance()->getParcelSelection()->getParcel(), false);
 }
-
-
 
 class LLObjectAttachToAvatar : public view_listener_t
 {
@@ -8815,6 +8919,91 @@ static void handle_morph_load_obj_continued(void* data, AIFilePicker* filepicker
 
 	morph_data->setMorphFromMesh(&mesh);
 }
+/*void handle_save_current_avatar_obj(void* data)
+{
+	if(gAgentAvatarp)
+		save_avatar_to_obj(gAgentAvatarp);
+}*/
+
+void handle_mesh_save_world_obj(void* data) //save the world!
+{
+	save_world_to_obj();
+}
+/*void save_selected_avatar_to_obj()
+{
+	LLVOAvatar* avatar = find_avatar_from_object( LLSelectMgr::getInstance()->getSelection()->getPrimaryObject() );
+	if(avatar)
+		save_avatar_to_obj(avatar);
+}*/
+
+/*void save_avatar_to_obj(LLVOAvatar *avatar)	
+{
+	std::string file_name = llformat("%s.obj", avatar->getFullname().c_str());
+	std::string full_path = gDirUtilp->getExpandedFilename(LL_PATH_LAST,file_name);
+
+	WavefrontSaver* wfsaver = new WavefrontSaver();
+	wfsaver->Add((LLVOAvatar*)avatar);
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(full_path);
+	filepicker->run(boost::bind(&save_wavefront_continued, wfsaver, filepicker));
+}*/
+
+/*void save_selected_objects_to_obj()
+{
+	LLObjectSelectionHandle selection = LLSelectMgr::getInstance()->getSelection();
+	if(!selection)
+		return;
+	std::string file_name = llformat("%s.obj", selection->getFirstNode()->mName.c_str());
+	std::string full_path = gDirUtilp->getExpandedFilename(LL_PATH_LAST,file_name);
+
+	WavefrontSaver* wfsaver = new WavefrontSaver();
+	LLSelectNode* root_one = (LLSelectNode *)*selection->root_begin();
+	wfsaver->offset = -root_one->getObject()->getRenderPosition();
+	for (LLObjectSelection::iterator iter = selection->begin();
+		iter != selection->end(); iter++)
+	{
+		LLSelectNode* node = *iter;
+		LLViewerObject* object = node->getObject();
+		wfsaver->Add(object);
+	}
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(full_path);
+	filepicker->run(boost::bind(&save_wavefront_continued, wfsaver, filepicker));
+}
+*/
+void save_world_to_obj()
+{
+	llinfos << "This function has yet to be implemented *snooze*" << llendl;
+}
+
+/*void save_wavefront_continued(WavefrontSaver* wfsaver, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+	{
+		llwarns << "No file; bailing" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLFILE* fp = LLFile::fopen(selected_filename, "wb");
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+	try
+	{
+		wfsaver->saveFile(fp);
+	}
+	catch(int e)
+	{
+		llwarns << "An exception occurred while generating / saving OBJ file. Exception #" << e << llendl;
+	}
+	llinfos << "OBJ file saved to " << selected_filename << llendl;
+	fclose(fp);
+}*/
+
 
 void handle_debug_avatar_textures(void*)
 {
@@ -8831,6 +9020,111 @@ void handle_debug_avatar_textures(void*)
 	}
 	// </edit>
 }
+
+/*void handle_grab_texture(void* data)
+{
+	ETextureIndex index = (ETextureIndex)((intptr_t)data);
+	LLVOAvatar* avatar = gAgentAvatarp;
+	if ( avatar )
+	{
+		const LLUUID& asset_id = avatar->grabLocalTexture(index);
+		LL_INFOS("texture") << "Adding baked texture " << asset_id << " to inventory." << llendl;
+		LLAssetType::EType asset_type = LLAssetType::AT_TEXTURE;
+		LLInventoryType::EType inv_type = LLInventoryType::IT_TEXTURE;
+		LLUUID folder_id(gInventory.findCategoryUUIDForType(LLFolderType::FT_TEXTURE));
+		if(folder_id.notNull())
+		{
+			std::string name = "Baked ";
+			switch (index)
+			{
+			case TEX_EYES_BAKED:
+				name.append("Iris");
+				break;
+			case TEX_HEAD_BAKED:
+				name.append("Head");
+				break;
+			case TEX_UPPER_BAKED:
+				name.append("Upper Body");
+				break;
+			case TEX_LOWER_BAKED:
+				name.append("Lower Body");
+				break;
+			case TEX_SKIRT_BAKED:
+				name.append("Skirt");
+				break;
+			case TEX_HAIR_BAKED:
+				name.append("Hair");
+				break;
+			default:
+				name.append("Unknown");
+				break;
+			}
+			name.append(" Texture");
+
+			LLUUID item_id;
+			item_id.generate();
+			LLPermissions perm;
+			perm.init(gAgentID,
+					  gAgentID,
+					  LLUUID::null,
+					  LLUUID::null);
+			U32 next_owner_perm = PERM_MOVE | PERM_TRANSFER;
+			perm.initMasks(PERM_ALL,
+						   PERM_ALL,
+						   PERM_NONE,
+						   PERM_NONE,
+						   next_owner_perm);
+			time_t creation_date_now = time_corrected();
+			LLPointer<LLViewerInventoryItem> item
+				= new LLViewerInventoryItem(item_id,
+											folder_id,
+											perm,
+											asset_id,
+											asset_type,
+											inv_type,
+											name,
+											LLStringUtil::null,
+											LLSaleInfo::DEFAULT,
+											LLInventoryItemFlags::II_FLAGS_NONE,
+											creation_date_now);
+
+			item->updateServer(TRUE);
+			gInventory.updateItem(item);
+			gInventory.notifyObservers();
+
+			LLInventoryView* view = LLInventoryView::getActiveInventory();
+
+			// Show the preview panel for textures to let
+			// user know that the image is now in inventory.
+			if(view)
+			{
+				LLFocusableElement* focus_ctrl = gFocusMgr.getKeyboardFocus();
+
+				view->getPanel()->setSelection(item_id, TAKE_FOCUS_NO);
+				view->getPanel()->openSelected();
+				//LLInventoryView::dumpSelectionInformation((void*)view);
+				// restore keyboard focus
+				gFocusMgr.setKeyboardFocus(focus_ctrl);
+			}
+		}
+		else
+		{
+			llwarns << "Can't find a folder to put it in" << llendl;
+		}
+	}
+}*/
+
+/*BOOL enable_grab_texture(void* data)
+{
+	ETextureIndex index = (ETextureIndex)((intptr_t)data);
+	LLVOAvatar* avatar = gAgentAvatarp;
+	if ( avatar )
+	{
+		return avatar->canGrabLocalTexture(index);
+	}
+	return FALSE;
+}*/
+
 
 // Returns a pointer to the avatar give the UUID of the avatar OR of an attachment the avatar is wearing.
 // Returns NULL on failure.
@@ -9024,6 +9318,10 @@ static void handle_load_from_xml_continued(AIFilePicker* filepicker)
 void handle_web_browser_test(void*)
 {
 	LLFloaterMediaBrowser::showInstance("http://secondlife.com/app/search/slurls.html");
+}
+void handle_web_browser_irc(void*)
+{
+	LLFloaterMediaBrowser::showInstance("http://client02.chat.mibbit.com");
 }
 
 void handle_buy_currency_test(void*)
@@ -9509,7 +9807,6 @@ void initialize_menus()
 
 
 	// Tools menu
-	addMenu(new LLToolsSelectTool(), "Tools.SelectTool");
 	addMenu(new LLToolsSelectOnlyMyObjects(), "Tools.SelectOnlyMyObjects");
 	addMenu(new LLToolsSelectOnlyMovableObjects(), "Tools.SelectOnlyMovableObjects");
 	addMenu(new LLToolsSelectBySurrounding(), "Tools.SelectBySurrounding");
@@ -9550,8 +9847,7 @@ void initialize_menus()
 
 	addMenu(new LLToolsEnablePathfinding(), "Tools.EnablePathfinding");
 	addMenu(new LLToolsEnablePathfindingView(), "Tools.EnablePathfindingView");
-	addMenu(new LLToolsDoPathfindingRebakeRegion(), "Tools.DoPathfindingRebakeRegion");
-	addMenu(new LLToolsEnablePathfindingRebakeRegion(), "Tools.EnablePathfindingRebakeRegion");
+
 	/*addMenu(new LLToolsVisibleBuyObject(), "Tools.VisibleBuyObject");
 	addMenu(new LLToolsVisibleTakeObject(), "Tools.VisibleTakeObject");*/
 
@@ -9567,7 +9863,7 @@ void initialize_menus()
 
 	 // Avatar pie menu
 
-
+//	addMenu(new LLObjectExport(), "Avatar.Export");
 	addMenu(new LLObjectMute(), "Avatar.Mute");
 	addMenu(new LLAvatarAddFriend(), "Avatar.AddFriend");
 	addMenu(new LLAvatarFreeze(), "Avatar.Freeze");
@@ -9586,7 +9882,7 @@ void initialize_menus()
 	addMenu(new LLAvatarEnableFreezeEject(), "Avatar.EnableFreezeEject");
 	addMenu(new LLAvatarCopyUUID(), "Avatar.CopyUUID");
 	addMenu(new LLAvatarClientUUID(), "Avatar.ClientID");
-
+//	addMenu(new LLAvatarSaveAsOBJ(), "Avatar.SaveAsOBJ");
 	// Object pie menu
 	addMenu(new LLObjectOpen(), "Object.Open");
 	addMenu(new LLObjectBuild(), "Object.Build");
@@ -9613,9 +9909,9 @@ void initialize_menus()
 	addMenu(new LLObjectDerender(), "Object.DERENDER");
 	addMenu(new LLAvatarReloadTextures(), "Avatar.ReloadTextures");
 	addMenu(new LLObjectReloadTextures(), "Object.ReloadTextures");
-	addMenu(new LLObjectExport(), "Object.Export");
+//	addMenu(new LLObjectExport(), "Object.Export");
 	addMenu(new LLObjectImport(), "Object.Import");
-	addMenu(new LLObjectImportUpload(), "Object.ImportUpload");
+//	addMenu(new LLObjectImportUpload(), "Object.ImportUpload");
 	
 
 	addMenu(new LLObjectEnableOpen(), "Object.EnableOpen");
@@ -9627,8 +9923,18 @@ void initialize_menus()
 	addMenu(new LLObjectEnableReportAbuse(), "Object.EnableReportAbuse");
 	addMenu(new LLObjectEnableMute(), "Object.EnableMute");
 	addMenu(new LLObjectEnableBuy(), "Object.EnableBuy");
-	addMenu(new LLObjectEnableExport(), "Object.EnableExport");
+//	addMenu(new LLObjectEnableExport(), "Object.EnableExport");
 	addMenu(new LLObjectEnableImport(), "Object.EnableImport");
+
+	// <edit>
+	addMenu(new LLObjectSaveAs(), "Object.SaveAs");
+	addMenu(new LLObjectImport(), "Object.Import");
+//	addMenu(new LLSelectionSaveAsOBJ(), "Object.SaveAsOBJ");
+	// </edit>
+	// <edit>
+	addMenu(new LLObjectEnableSaveAs(), "Object.EnableSaveAs");
+	addMenu(new LLObjectEnableImport(), "Object.EnableImport");
+	// </edit>
 
 	/*addMenu(new LLObjectVisibleTouch(), "Object.VisibleTouch");
 	addMenu(new LLObjectVisibleCustomTouch(), "Object.VisibleCustomTouch");
@@ -9639,7 +9945,7 @@ void initialize_menus()
 	// Attachment pie menu
 	addMenu(new LLAttachmentDrop(), "Attachment.Drop");
 	addMenu(new LLAttachmentDetach(), "Attachment.Detach");
-
+//	addMenu(new LLObjectEnableExport(), "Attachment.EnableExport");
 	addMenu(new LLAttachmentEnableDrop(), "Attachment.EnableDrop");
 	addMenu(new LLAttachmentEnableDetach(), "Attachment.EnableDetach");
 
