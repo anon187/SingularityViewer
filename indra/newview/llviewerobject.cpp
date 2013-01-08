@@ -5438,6 +5438,7 @@ void LLViewerObject::updateFlags(BOOL physics_changed)
 	gMessageSystem->addBOOLFast(_PREHASH_UsePhysics, flagUsePhysics() );
 	gMessageSystem->addBOOL("IsTemporary", flagTemporaryOnRez() );
 	gMessageSystem->addBOOL("IsPhantom", flagPhantom() );
+	gMessageSystem->addBOOL("CastsShadows", flagCastShadows() );
 
 	// stinson 02/28/2012 : This CastsShadows BOOL is no longer used in either the viewer or the simulator
 	// The simulator code does not even unpack this value when the message is received.

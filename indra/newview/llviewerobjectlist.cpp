@@ -85,6 +85,10 @@
 #include "llfloaterblacklist.h"
 
 #include "llviewerobjectbackup.h"
+// <edit>
+#include "llimportobject.h"
+//#include "llfloaterinterceptor.h"
+// </edit>
 
 extern F32 gMinObjectDistance;
 extern BOOL gAnimateTextures;
@@ -270,7 +274,7 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	}
 	else
 	{
-		LLObjectBackup::getInstance()->primUpdate(objectp);
+		LLXmlImport::onUpdatePrim(objectp);
 	}
 	
 
@@ -282,14 +286,21 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	// so that the drawable parent is set properly
 	findOrphans(objectp, msg->getSenderIP(), msg->getSenderPort());
 	
-	if(just_created && objectp &&
-	(gImportTracker.getState() == ImportTracker::WAND /*||
-	gImportTracker.getState() == ImportTracker::BUILDING*/) &&
-	objectp->mCreateSelected && objectp->permYouOwner() &&
-	objectp->permModify() && objectp->permCopy() && objectp->permTransfer())
+	// <edit>
+	if (just_created
+		&& update_type != OUT_TERSE_IMPROVED
+		&& LLXmlImport::sImportInProgress)
 	{
-		gImportTracker.get_update(objectp->mLocalID, just_created, objectp->mCreateSelected);
+		LLViewerObject* parent = (LLViewerObject*)objectp->getParent();
+		if(parent)
+		{
+			if(parent->getID() == gAgent.getID())
+			{
+				LLXmlImport::onNewAttachment(objectp);
+			}
+		}
 	}
+	//</edit>
 
 	// If we're just wandering around, don't create new objects selected.
 	if (just_created 
@@ -308,9 +319,12 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 		gViewerWindow->getWindow()->decBusyCount();
 		gViewerWindow->getWindow()->setCursor( UI_CURSOR_ARROW );
 		
-		LLObjectBackup::getInstance()->newPrim(objectp);		
+		// <edit>
+		LLXmlImport::onNewPrim(objectp);
+		// </edit>	
 	}
 }
+
 
 static LLFastTimer::DeclareTimer FTM_PROCESS_OBJECTS("Process Objects");
 
@@ -1340,7 +1354,7 @@ void LLViewerObjectList::killAllObjects()
 		
 		killObject(objectp);
 		// Object must be dead, or it's the LLVOAvatarSelf which never dies.
-		llassert((objectp == gAgentAvatarp) || objectp->isDead() || (objectp->asAvatar() && objectp->asAvatar()->isFrozenDead()));
+		llassert((objectp == gAgentAvatarp) || objectp->isDead());
 	}
 
 	cleanDeadObjects(FALSE);

@@ -196,6 +196,7 @@ set(viewer_SOURCE_FILES
     llfloaterevent.cpp
     llfloaterexploreanimations.cpp
     llfloaterexploresounds.cpp
+	llfloaterexport.cpp
     llfloaterfeed.cpp
     llfloaterfonttest.cpp
     llfloaterfriends.cpp
@@ -209,6 +210,7 @@ set(viewer_SOURCE_FILES
     llfloaterhtmlsimple.cpp
     llfloaterhud.cpp
     llfloaterimagepreview.cpp
+	llfloaterimport.cpp
     llfloaterinspect.cpp
     llfloaterjoystick.cpp
     llfloaterlagmeter.cpp
@@ -283,6 +285,7 @@ set(viewer_SOURCE_FILES
     llhudtext.cpp
     llhudview.cpp
     llimpanel.cpp
+	llimportobject.cpp
     llimview.cpp
     llinventoryactions.cpp
     llinventorybackup.cpp
@@ -704,6 +707,7 @@ set(viewer_HEADER_FILES
     llfloaterenvsettings.h
     llfloaterexploreanimations.h
     llfloaterexploresounds.h
+	llfloaterexport.h
     llfloaterevent.h
     llfloaterfeed.h
     llfloaterfonttest.h
@@ -718,6 +722,7 @@ set(viewer_HEADER_FILES
     llfloaterhtmlsimple.h
     llfloaterhud.h
     llfloaterimagepreview.h
+	llfloaterimport.h
     llfloaterinspect.h
     llfloaterjoystick.h
     llfloaterlagmeter.h
@@ -792,6 +797,7 @@ set(viewer_HEADER_FILES
     llhudtext.h
     llhudview.h
     llimpanel.h
+	llimportobject.h
     llimview.h
     llinventorybackup.h
     llinventorybridge.h

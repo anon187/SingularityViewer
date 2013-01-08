@@ -55,7 +55,7 @@ const U32   FLAGS_CAMERA_DECOUPLED     = (1U << 20);
 const U32   FLAGS_ANIM_SOURCE          = (1U << 21);
 const U32   FLAGS_CAMERA_SOURCE        = (1U << 22);
 
-//const U32 FLAGS_UNUSED_001           = (1U << 23); // was FLAGS_CAST_SHADOWS
+const U32	FLAGS_CAST_SHADOWS         = (1U << 23); 
 
 //const U32 FLAGS_UNUSED_002           = (1U << 24);
 //const U32 FLAGS_UNUSED_003           = (1U << 25);
