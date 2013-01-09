@@ -790,7 +790,7 @@ Command-options for "configure":
   -DEXAMPLEPLUGIN:BOOL=OFF   Don't generate example plugin project
   -DDISABLE_TCMALLOC:BOOL=ON Disable linkage of TCMalloc. (64bit builds automatically disable TCMalloc)
   -DVISTA_ICON:BOOL=ON       Allow pre-2008 VS to use vista-optimized resource file. (Requires updated rcdll.dll!)
-
+  -DUSE_KDU:BOOL=OFF        	 Use Dynamically Linked Kakadu library to read and write JPEG2000 images
 Examples:
   Set up a viewer-only project for your system:
     develop.py configure -DSERVER:BOOL=OFF

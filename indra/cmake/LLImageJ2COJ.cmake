@@ -2,4 +2,6 @@
 
 include(OpenJPEG)
 
-set(LLIMAGEJ2COJ_LIBRARIES llimagej2coj)
+if (NOT USE_KDU)
+ set(LLIMAGEJ2COJ_LIBRARIES llimagej2coj)
+endif (NOT USE_KDU)

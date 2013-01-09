@@ -60,6 +60,7 @@ include_directories(
     ${LLCHARACTER_INCLUDE_DIRS}
     ${LLCOMMON_INCLUDE_DIRS}
     ${LLIMAGE_INCLUDE_DIRS}
+    ${LLKDU_INCLUDE_DIRS}
     ${LLINVENTORY_INCLUDE_DIRS}
     ${LLMATH_INCLUDE_DIRS}
     ${LLMESSAGE_INCLUDE_DIRS}
@@ -1554,7 +1555,6 @@ target_link_libraries(${VIEWER_BINARY_NAME}
     ${LLAUDIO_VORBIS_LIBRARIES}
     ${LLCHARACTER_LIBRARIES}
     ${LLIMAGE_LIBRARIES}
-    ${LLIMAGEJ2COJ_LIBRARIES}
     ${LLINVENTORY_LIBRARIES}
     ${LLMESSAGE_LIBRARIES}
     ${LLPLUGIN_LIBRARIES}
@@ -1589,6 +1589,16 @@ target_link_libraries(${VIEWER_BINARY_NAME}
     ${ELFIO_LIBRARIES}
     ${HUNSPELL_LIBRARY}
     )
+if (USE_KDU)
+    target_link_libraries(${VIEWER_BINARY_NAME}
+    ${LLKDU_LIBRARIES}
+    ${KDU_LIBRARY}
+    )
+else (USE_KDU)
+    target_link_libraries(${VIEWER_BINARY_NAME}
+    ${LLIMAGEJ2COJ_LIBRARIES}
+    )
+endif (USE_KDU)
 
 if (LINUX)
   add_custom_command(
