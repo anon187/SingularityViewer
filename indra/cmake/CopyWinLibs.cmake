@@ -280,53 +280,35 @@ copy_if_different(
     )
 set(all_targets ${all_targets} ${out_targets})
 
-set(internal_llkdu_path "${CMAKE_SOURCE_DIR}/llkdu")
-if(EXISTS ${internal_llkdu_path})
-    set(internal_llkdu_src "${CMAKE_BINARY_DIR}/llkdu/${CMAKE_CFG_INTDIR}/llkdu.dll")
-    set(llkdu_dst "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/llkdu.dll")
-    ADD_CUSTOM_COMMAND(
-        OUTPUT  ${llkdu_dst}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${internal_llkdu_src} ${llkdu_dst}
-        DEPENDS ${internal_llkdu_src}
-        COMMENT "Copying llkdu.dll ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}"
+#<edit> Copy MSVC100 Runtimes to build dir
+if(MSVC10)
+    FIND_PATH(release_msvc10_redist_path msvcr100.dll
+        PATHS
+        ${MSVC_REDIST_PATH}
+	if ARCH_TYPE=x64		
+		 [HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\VisualStudio\\10.0\\Setup\\VC;ProductDir]/redist/x86/Microsoft.VC100.CRT
+	endif ARCH_TYPE=x64
+	if ARCH_TYPE=x86
+		[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\VisualStudio\\10.0\\Setup\\VC;ProductDir]/redist/x86/Microsoft.VC100.CRT
+	endif ARCH_TYPE=x86
+        NO_DEFAULT_PATH
+        NO_DEFAULT_PATH
         )
-    set(all_targets ${all_targets} ${llkdu_dst})
-else(EXISTS ${internal_llkdu_path})
-    if (EXISTS "${debug_src_dir}/llkdu.dll")
-        set(debug_llkdu_src "${debug_src_dir}/llkdu.dll")
-        set(debug_llkdu_dst "${CMAKE_CURRENT_BINARY_DIR}/Debug/llkdu.dll")
-        ADD_CUSTOM_COMMAND(
-            OUTPUT  ${debug_llkdu_dst}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${debug_llkdu_src} ${debug_llkdu_dst}
-            DEPENDS ${debug_llkdu_src}
-            COMMENT "Copying llkdu.dll ${CMAKE_CURRENT_BINARY_DIR}/Debug"
+    if(EXISTS ${release_msvc10_redist_path})
+        set(release_msvc10_files
+            msvcr100.dll
+            msvcp100.dll
             )
-        set(all_targets ${all_targets} ${debug_llkdu_dst})
-    endif (EXISTS "${debug_src_dir}/llkdu.dll")
-
-    if (EXISTS "${release_src_dir}/llkdu.dll")
-        set(release_llkdu_src "${release_src_dir}/llkdu.dll")
-        set(release_llkdu_dst "${CMAKE_CURRENT_BINARY_DIR}/Release/llkdu.dll")
-        ADD_CUSTOM_COMMAND(
-            OUTPUT  ${release_llkdu_dst}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${release_llkdu_src} ${release_llkdu_dst}
-            DEPENDS ${release_llkdu_src}
-            COMMENT "Copying llkdu.dll ${CMAKE_CURRENT_BINARY_DIR}/Release"
+        copy_if_different(
+            ${release_msvc10_redist_path} 
+            "${CMAKE_CURRENT_BINARY_DIR}/Release"
+            out_targets 
+            ${release_msvc10_files}
             )
-        set(all_targets ${all_targets} ${release_llkdu_dst})
-
-        set(relwithdebinfo_llkdu_dst "${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo/llkdu.dll")
-        ADD_CUSTOM_COMMAND(
-            OUTPUT  ${relwithdebinfo_llkdu_dst}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${release_llkdu_src} ${relwithdebinfo_llkdu_dst}
-            DEPENDS ${release_llkdu_src}
-            COMMENT "Copying llkdu.dll ${CMAKE_CURRENT_BINARY_DIR}/RelWithDebInfo"
-            )
-        set(all_targets ${all_targets} ${relwithdebinfo_llkdu_dst})
-    endif (EXISTS "${release_src_dir}/llkdu.dll")
-   
-endif (EXISTS ${internal_llkdu_path})
-
+        set(all_targets ${all_targets} ${out_targets})
+	endif(EXISTS ${release_msvc10_redist_path})
+endif(MSVC10)
+#<edit> End
 # Copy MS C runtime dlls, required for packaging.
 # *TODO - Adapt this to support VC9
 if (MSVC80)
@@ -434,7 +416,3 @@ add_custom_target(copy_win_libs ALL
     ${debug_appconfig_file}
   )
 add_dependencies(copy_win_libs prepare)
-
-if(EXISTS ${internal_llkdu_path})
-    add_dependencies(copy_win_libs llkdu)
-endif(EXISTS ${internal_llkdu_path})

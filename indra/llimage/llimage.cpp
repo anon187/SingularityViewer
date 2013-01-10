@@ -60,14 +60,12 @@ LLPrivateMemoryPool* LLImageBase::sPrivatePoolp = NULL ;
 void LLImage::initClass()
 {
 	sMutex = new LLMutex;
-	LLImageJ2C::openDSO();
 	LLImageBase::createPrivatePool() ;
 }
 
 //static
 void LLImage::cleanupClass()
 {
-	LLImageJ2C::closeDSO();
 	delete sMutex;
 	sMutex = NULL;
 

@@ -95,6 +95,10 @@ public:
 
 	virtual const char* getMessageName() const;
 	virtual S32 getMessageSize() const;
+	
+	// <edit>
+	LLMessageTemplate* getTemplate();
+	// </edit>
 
 	virtual void copyToBuilder(LLMessageBuilder&) const;
 
@@ -117,7 +121,9 @@ private:
 
 	void logRanOffEndOfPacket( const LLHost& host, const S32 where, const S32 wanted );
 
+public:
 	BOOL decodeData(const U8* buffer, const LLHost& sender, bool custom);
+private:
 
 	S32	mReceiveSize;
 	LLMessageTemplate* mCurrentRMessageTemplate;

@@ -61,6 +61,10 @@ target_link_libraries(
     ${ZLIB_LIBRARIES}
     )
 
+if (NOT USE_KDU)
+   target_link_libraries(llimage llimagej2coj)
+endif (NOT USE_KDU)
+
 if (LL_TESTS)
 	# Add tests
 	ADD_BUILD_TEST(llimageworker llimage)

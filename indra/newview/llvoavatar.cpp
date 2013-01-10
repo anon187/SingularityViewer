@@ -8911,6 +8911,124 @@ void LLVOAvatar::cullAvatarsByPixelArea()
 	}
 }
 
+//<edit>
+const LLUUID& LLVOAvatar::grabLocalTexture(ETextureIndex index)
+{
+	if (canGrabLocalTexture(index))
+	{
+		return getTEImage( index )->getID();
+	}
+	return LLUUID::null;
+}
+
+BOOL LLVOAvatar::canGrabLocalTexture(ETextureIndex index)
+{
+	// Check if the texture hasn't been baked yet.
+	if (!isTextureDefined(index))
+	{
+		lldebugs << "getTEImage( " << (U32) index << " )->getID() == IMG_DEFAULT_AVATAR" << llendl;
+		return FALSE;
+	}
+
+	if (gAgent.isGodlike() && !gAgent.getAdminOverride())
+		return TRUE;
+
+	// Check permissions of textures that show up in the
+	// baked texture.  We don't want people copying people's
+	// work via baked textures.
+	/* switch(index)
+		case TEX_EYES_BAKED:
+			textures.push_back(TEX_EYES_IRIS); */
+	const LLVOAvatarDictionary::TextureEntry *text_dict = LLVOAvatarDictionary::getInstance()->getTexture(index);
+	if (!text_dict->mIsUsedByBakedTexture) return FALSE;
+
+	const EBakedTextureIndex baked_index = text_dict->mBakedTextureIndex;
+	const LLVOAvatarDictionary::BakedEntry *baked_dict = LLVOAvatarDictionary::getInstance()->getBakedTexture(baked_index);
+	for (texture_vec_t::const_iterator iter = baked_dict->mLocalTextures.begin();
+		 iter != baked_dict->mLocalTextures.end();
+		 iter++)
+	{
+		const ETextureIndex t_index = (*iter);
+		lldebugs << "Checking index " << (U32) t_index << llendl;
+		const LLUUID& texture_id = getTEImage( t_index )->getID();
+		if (texture_id != IMG_DEFAULT_AVATAR)
+		{
+
+			BOOL can_grab = FALSE;
+			if (1)	
+			{
+			can_grab = TRUE;
+			break;
+			}
+			if (!can_grab) return FALSE;
+		}
+	}
+
+	return TRUE;
+}
+
+void LLVOAvatar::dumpLocalTextures()
+{
+	llinfos << "Local Textures:" << llendl;
+
+	/* ETextureIndex baked_equiv[] = {
+		TEX_UPPER_BAKED,
+	   if (isTextureDefined(baked_equiv[i])) */
+	for (LLVOAvatarDictionary::Textures::const_iterator iter = LLVOAvatarDictionary::getInstance()->getTextures().begin();
+		 iter != LLVOAvatarDictionary::getInstance()->getTextures().end();
+		 iter++)
+	{
+		const LLVOAvatarDictionary::TextureEntry *text_dict = iter->second;
+		if (!text_dict->mIsLocalTexture || !text_dict->mIsUsedByBakedTexture)
+			continue;
+
+		const EBakedTextureIndex baked_index = text_dict->mBakedTextureIndex;
+		const ETextureIndex baked_equiv = LLVOAvatarDictionary::getInstance()->getBakedTexture(baked_index)->mTextureIndex;
+
+		const std::string &name = text_dict->mName;
+		const LocalTextureData &local_tex_data = mLocalTextureData[iter->first];
+		if (isTextureDefined(baked_equiv))
+		{
+#if LL_RELEASE_FOR_DOWNLOAD
+			// End users don't get to trivially see avatar texture IDs, makes textures
+			// easier to steal. JC
+			llinfos << "LocTex " << name << ": Baked " << llendl;
+#else
+			llinfos << "LocTex " << name << ": Baked " << getTEImage( baked_equiv )->getID() << llendl;
+#endif
+		}
+		else if (local_tex_data.mImage.notNull())
+		{
+			if( local_tex_data.mImage->getID() == IMG_DEFAULT_AVATAR )
+			{
+				llinfos << "LocTex " << name << ": None" << llendl;
+			}
+			else
+			{
+				const LLViewerFetchedTexture* image = local_tex_data.mImage;
+
+				llinfos << "LocTex " << name << ": "
+						<< "Discard " << image->getDiscardLevel() << ", "
+						<< "(" << image->getWidth() << ", " << image->getHeight() << ") "
+// <edit>
+//#if !LL_RELEASE_FOR_DOWNLOAD
+#if 1
+// </edit>
+					// End users don't get to trivially see avatar texture IDs,
+					// makes textures easier to steal
+						<< image->getID() << " "
+#endif
+						<< "Priority: " << image->getDecodePriority()
+						<< llendl;
+			}
+		}
+		else
+		{
+			llinfos << "LocTex " << name << ": No LLViewerTexture" << llendl;
+		}
+	}
+}
+//</edit>
 void LLVOAvatar::startAppearanceAnimation()
 {
 	if(!mAppearanceAnimating)

@@ -185,16 +185,7 @@ class WindowsManifest(ViewerManifest):
         self.path(os.path.join(os.pardir,
                                'llplugin', 'slplugin', self.args['configuration'], "SLPlugin.exe"),
                   "SLPlugin.exe")
-
-        # need to get the kdu dll from any of the build directories as well
-        #~ try:
-            #~ self.path(self.find_existing_file('../llkdu/%s/llkdu.dll' % self.args['configuration'],
-            #~ '../../libraries/i686-win32/lib/release/llkdu.dll'),
-                  #~ dst='llkdu.dll')
-            #~ pass
-        #~ except:
-            #~ print "Skipping llkdu.dll"
-            #~ pass
+        
         self.path(src="licenses-win32.txt", dst="licenses.txt")
 
         self.path("featuretable.txt")
@@ -228,6 +219,16 @@ class WindowsManifest(ViewerManifest):
             self.path("basic_plugin_filepicker.dll")
             self.end_prefix()
 
+        # Microsoft Runtime Libraries
+        if self.prefix(src=self.args['configuration'], dst=""):
+            if self.args['configuration'] == 'Debug':
+                self.path("msvcr100d.dll")
+                self.path("msvcp100d.dll")
+            else:
+                self.path("msvcr100.dll")
+                self.path("msvcp100.dll")
+            self.end_prefix()
+			
         # Media plugins - QuickTime
         if self.prefix(src='../plugins/quicktime/%s' % self.args['configuration'], dst="llplugin"):
             self.path("media_plugin_quicktime.dll")

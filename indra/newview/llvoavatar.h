@@ -679,6 +679,11 @@ private:
 	//--------------------------------------------------------------------
 public:
 	void 			onFirstTEMessageReceived();
+	//<edit>
+	void			dumpLocalTextures();
+	const LLUUID&	grabLocalTexture(LLVOAvatarDefines::ETextureIndex index);
+	BOOL			canGrabLocalTexture(LLVOAvatarDefines::ETextureIndex index);
+	//< /edit>
 private:
 	BOOL			mFirstTEMessageReceived;
 	BOOL			mFirstAppearanceMessageReceived;
@@ -1237,6 +1242,21 @@ public:
 	LLFrameTimer 	mIdleTimer;
 private:
 	S32				mIdleMinute;
+	//-----------------------------------------------------------------------------------------------
+	// Per-avatar information about texture data.
+	// To-do: Move this to private implementation class
+	//-----------------------------------------------------------------------------------------------
+
+	struct LocalTextureData
+	{
+		LocalTextureData() : mIsBakedReady(false), mDiscard(MAX_DISCARD_LEVEL+1), mImage(NULL)
+		{}
+		LLPointer<LLViewerFetchedTexture> mImage;
+		bool mIsBakedReady;
+		S32 mDiscard;
+	};
+	typedef std::map<LLVOAvatarDefines::ETextureIndex, LocalTextureData> localtexture_map_t;
+	localtexture_map_t mLocalTextureData;
 
 //CCS Nametag
 public:

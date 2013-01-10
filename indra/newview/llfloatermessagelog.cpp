@@ -9,25 +9,12 @@
 #include "lltexteditor.h"
 #include "llviewerwindow.h" // alertXml
 #include "llmessagetemplate.h"
+#include "llfloatermessagebuilder.h"
 #include <boost/tokenizer.hpp>
 #include "llmenugl.h"
 #include "lleventtimer.h"
 
 #include "llagent.h"
-
-
-////////////////////////////////
-// LLNetListItem
-//////////////////////////////// 	
-LLNetListItem::LLNetListItem(LLUUID id)
-:	mID(id),
-	mAutoName(TRUE),
-	mName("No name"),
-	mPreviousRegionName(""),
-	mCircuitData(NULL)	 	
-{
-}
-
 ////////////////////////////////
 // LLFloaterMessageLogItem
 ////////////////////////////////
@@ -521,6 +508,7 @@ BOOL LLFloaterMessageLog::postBuild()
 	childSetAction("filter_apply_btn", onClickFilterApply, this);
 	childSetCommitCallback("filter_edit", onCommitFilter, this);
 	childSetAction("clear_log_btn", onClickClearLog, this);
+	childSetAction("send_to_message_builder_btn", onClickSendToMessageBuilder, this);
 	childSetText("filter_edit", sMessageLogFilterString);
 	refreshNetList();
 	refreshNetInfo(TRUE);
@@ -699,6 +687,7 @@ void LLFloaterMessageLog::setNetInfoMode(ENetInfoMode mode)
 	mNetInfoMode = mode;
 	if(mNetInfoMode == NI_NET)
 		refreshNetInfo(TRUE);
+	childSetEnabled("send_to_message_builder_btn", mNetInfoMode == NI_LOG);
 }
 // static
 void LLFloaterMessageLog::onLog(LLMessageLogEntry entry)
@@ -953,5 +942,24 @@ void LLFloaterMessageLog::onClickFilterMenu(void* user_data)
 	std::string filter = std::string((char*)user_data);
 	sInstance->childSetText("filter_edit", filter);
 	sInstance->startApplyingFilter(filter, FALSE);
+}
+// static
+void LLFloaterMessageLog::onClickSendToMessageBuilder(void* user_data)
+{
+	LLFloaterMessageLog* floaterp = (LLFloaterMessageLog*)user_data;
+	LLScrollListCtrl* scrollp = floaterp->getChild<LLScrollListCtrl>("message_log");
+	LLScrollListItem* selected_itemp = scrollp->getFirstSelected();
+	if(!selected_itemp) return;
+	LLUUID id = selected_itemp->getUUID();
+	std::vector<LLFloaterMessageLogItem>::iterator end = sFloaterMessageLogItems.end();
+	for(std::vector<LLFloaterMessageLogItem>::iterator iter = sFloaterMessageLogItems.begin(); iter != end; ++iter)
+	{
+		if(iter->mID == id)
+		{
+			std::string message_text = iter->getFull(FALSE);
+			LLFloaterMessageBuilder::show(message_text);
+			break;
+		}
+	}
 }
 // </edit>

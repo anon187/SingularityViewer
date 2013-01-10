@@ -93,6 +93,9 @@
 #include "rlvhandler.h"
 // [/RLVa:KB]
 
+//<edit>
+#include "llfloaterattachments.h"
+//</edit>
 LLViewerObject* getSelectedParentObject(LLViewerObject *object) ;
 //
 // Consts
@@ -5054,6 +5057,9 @@ void LLSelectMgr::processObjectProperties(LLMessageSystem* msg, void** user_data
 			node->mSitName.assign(sit_name);
 			node->mTouchName.assign(touch_name);
 		}
+		//<edit>
+		if(!node) LLFloaterAttachments::dispatchHUDObjectProperties(new LLHUDAttachment(name, desc, owner_id, id, from_task_id, texture_ids, 0, inv_serial));
+		//< /edit>
 	}
 
 	dialog_refresh_all();

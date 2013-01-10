@@ -49,15 +49,14 @@ public:
 
 	static void playAnim( void* userdata );
 	static void auditionAnim( void* userdata );
-	// <edit>
-	/*
-	static void copyAnim(void* userdata);
-	static void gotAssetForCopy(LLVFS *vfs,
-									   const LLUUID& asset_uuid,
-									   LLAssetType::EType type,
-									   void* user_data, S32 status, LLExtStat ext_status);
-	static void onSaveCopyComplete(const LLUUID& asset_uuid, void* user_data, S32 status, LLExtStat ext_status);
-	*/
+	//<edit>
+	static void dupliAnim( void* userdata );
+	static void downloadCompleteCallback(LLVFS *vfs, const LLUUID& uuid, LLAssetType::EType type, void *user, S32 result, LLExtStat extstat);
+	void		onBtnExport_animatn();
+	static void	onBtnExport_animatn_continued(void* userdata, AIFilePicker* filepicker);
+	void		onBtnExport_bvh();
+	static void	onBtnExport_bvh_continued(void* userdata, AIFilePicker* filepicker);
+	//< /edit>
 	static void gotAssetForSave(LLVFS *vfs,
 									   const LLUUID& asset_uuid,
 									   LLAssetType::EType type,
@@ -85,6 +84,10 @@ protected:
 	LLButton*	mPlayBtn;
 	LLButton*	mAuditionBtn;
 	bool		mIsCopyable;
+	//<edit>
+	U8*			mAnimBuffer;
+	S32			mAnimBufferSize;
+	//< /edit>
 };
 
 #endif  // LL_LLPREVIEWSOUND_H

@@ -742,6 +742,39 @@
           </map>
         </map>
       </map>
+      <key>kdu</key>
+      <map>
+        <key>copyright</key>
+        <string>on file</string>
+        <key>description</key>
+        <string>Kakadu (KDU) JPEG-2000 decoder library. </string>
+        <key>license</key>
+        <string>kdu</string>
+        <key>packages</key>
+        <map>
+          <key>darwin</key>
+          <map>
+            <key>md5sum</key>
+            <string>6f4847c17b61c4c6d1bdebdbaf1b4edd</string>
+            <key>url</key>
+            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/kdu-6.4.1-darwin-20101123.tar.bz2</uri>
+          </map>
+          <key>linux</key>
+          <map>
+            <key>md5sum</key>
+            <string>ed3e58899a424684dad49c94ba3813e7</string>
+            <key>url</key>
+            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/kdu-6.4.1-linux-20101124.tar.bz2</uri>
+          </map>
+          <key>windows</key>
+          <map>
+            <key>md5sum</key>
+            <string>8bb0945c654b001f860c4822ab03971d</string>
+            <key>url</key>
+            <uri>/custom/kakadu-v6.4.1-win-v1.tar.bz2</uri>
+          </map>
+        </map>
+      </map>
       <key>libpng</key>
       <map>
         <key>copyright</key>

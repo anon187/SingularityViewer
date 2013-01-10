@@ -808,6 +808,13 @@ const char* LLTemplateMessageReader::getMessageName() const
 	return mCurrentRMessageTemplate->mName;
 }
 
+// <edit>
+LLMessageTemplate* LLTemplateMessageReader::getTemplate()
+{
+	return mCurrentRMessageTemplate;
+}
+// </edit>
+
 //virtual 
 bool LLTemplateMessageReader::isTrusted() const
 {

@@ -11,7 +11,8 @@
 #include "llpreviewtexture.h"
 #include "llpreviewgesture.h"
 #include "llpreviewlandmark.h"
-#include "hgfloatertexteditor.h"
+#include "llfloaterhex.h"
+#include "llfloatertexteditor.h"
 
 #include "llappviewer.h"
 
@@ -34,18 +35,13 @@ LLUUID LLLocalInventory::addItem(std::string name, int type, LLUUID asset_id)
 {
 	LLUUID item_id;
 	item_id.generate();
-	LLPermissions* perms = new LLPermissions();
-	perms->set(LLPermissions::DEFAULT);
-	perms->setOwnerAndGroup(LLUUID::null, LLUUID::null, LLUUID::null, false);
-	perms->setMaskBase(0);
-	perms->setMaskEveryone(0);
-	perms->setMaskGroup(0);
-	perms->setMaskNext(0);
-	perms->setMaskOwner(0);
+	LLPermissions new_perms;
+	new_perms.init(gAgent.getID(), gAgent.getID(), LLUUID::null, LLUUID::null);
+	new_perms.initMasks(PERM_ALL, PERM_ALL, PERM_ALL, PERM_ALL, PERM_ALL);
 	LLViewerInventoryItem* item = new LLViewerInventoryItem(
 			item_id,
 			gSystemFolderAssets,
-			*perms,
+			new_perms,
 			asset_id,
 			(LLAssetType::EType)type,
 			(LLInventoryType::EType)type,
@@ -150,7 +146,8 @@ void LLLocalInventory::open(LLUUID item_id)
 	}
 	else
 	{
-		llwarns << "Dunno how to open type " << type << llendl;
+		llwarns << "Dunno how to open type " << type << ", falling back to hex editor" << llendl;
+		LLFloaterHex::show(item_id);
 	}
 }
 
@@ -401,28 +398,6 @@ void LLLocalInventory::climb(LLInventoryCategory* cat,
 		climb(*cat_iter, cats, items);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 LLUUID LLFloaterNewLocalInventory::sLastCreatorId = LLUUID::null;
 

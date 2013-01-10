@@ -2,18 +2,8 @@
 #include "llfloater.h"
 #include "llmessagelog.h"
 #include "lltemplatemessagereader.h"
+#include "llfloatermessagebuilder.h"
 #include "lleventtimer.h"
-
-class LLNetListItem
-{
-public:
-	LLNetListItem(LLUUID id);
-	LLUUID mID;
-	BOOL mAutoName;
-	std::string mName;
-	std::string mPreviousRegionName;
-	LLCircuitData* mCircuitData;
-};
 
 class LLFloaterMessageLogItem : public LLMessageLogEntry
 {
@@ -92,5 +82,6 @@ public:
 	ENetInfoMode mNetInfoMode;
 	static void onClickFilterChoice(void* user_data);
 	static void onClickFilterMenu(void* user_data);
+	static void onClickSendToMessageBuilder(void* user_data);
 };
 // </edit>
