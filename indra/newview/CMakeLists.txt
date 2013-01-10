@@ -76,6 +76,10 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+#edit simms
+    llfloaterattachments.cpp
+    llfloatertextdump.cpp
+#edit_end
     aoremotectrl.cpp
     ascentfloatercontactgroups.cpp
     ascentkeyword.cpp
@@ -585,6 +589,10 @@ set(VIEWER_BINARY_NAME "secondlife-bin" CACHE STRING
 set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
+#edit simms
+    llfloaterattachments.h
+    llfloatertextdump.h
+#edit_end
     aoremotectrl.h
     ascentfloatercontactgroups.h
     ascentkeyword.h

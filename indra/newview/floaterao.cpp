@@ -1088,6 +1088,13 @@ void LLFloaterAO::onNotecardLoadComplete(LLVFS *vfs,const LLUUID& asset_uuid,LLA
 							std::string strtoken(what[0]);
 							std::string stranim(*anim);
 							LLUUID animid(getAssetIDByName(stranim));
+					//<edit> ao mod for uuid
+							LLUUID animUUID = LLUUID(stranim);
+							if (animid.isNull() && animUUID.notNull())
+							{
+							animid = animUUID;
+							}
+					//</edit>
 
 //							llinfos << invfolderid.asString().c_str() << llendl;
 //							llinfos << "anim: " << stranim.c_str() << " assetid: " << animid << llendl;

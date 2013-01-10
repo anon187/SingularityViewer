@@ -384,11 +384,11 @@ bool LLFilePickerBase::getSaveFile(ESaveFilter filter, std::string const& filena
 	case FFSAVE_ANIM:
 		if (filename.empty())
 		{
-			wcsncpy( mFilesW,L"untitled.xaf", FILENAME_BUFFER_SIZE);	/*Flawfinder: ignore*/
+			wcsncpy( mFilesW,L"untitled.bvh", FILENAME_BUFFER_SIZE);	/*Flawfinder: ignore*/
 		}
-		mOFN.lpstrDefExt = L"xaf";
+		mOFN.lpstrDefExt = L"bvh";
 		mOFN.lpstrFilter =
-			L"XAF Anim File (*.xaf)\0*.xaf\0" \
+			L"BVH Anim File (*.bvh)\0*.bvh\0" \
 			L"\0";
 		break;
 #ifdef _CORY_TESTING

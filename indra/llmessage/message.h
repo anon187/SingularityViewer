@@ -61,6 +61,8 @@
 
 #include "llstoredmessage.h"
 
+#include <boost/signals2/connection.hpp>
+
 class LLPacketRing;
 namespace
 {
@@ -230,13 +232,16 @@ class LLMessageSystem : public LLMessageSenderInterface
 	typedef std::map<const char *, LLMessageTemplate*> message_template_name_map_t;
 	typedef std::map<U32, LLMessageTemplate*> message_template_number_map_t;
 
-private:
+// <edit>
+//private:
+// </edit>
 	message_template_name_map_t		mMessageTemplates;
 	message_template_number_map_t		mMessageNumbers;
 	friend class LLFloaterMessageLogItem;
 	friend class LLFloaterMessageLog;
-
-public:
+// <edit>
+//public:
+// </edit>
 	S32					mSystemVersionMajor;
 	S32					mSystemVersionMinor;
 	S32					mSystemVersionPatch;
@@ -309,10 +314,16 @@ public:
 
 
 	// methods for building, sending, receiving, and handling messages
-	void	setHandlerFuncFast(const char *name, void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data = NULL);
-	void	setHandlerFunc(const char *name, void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data = NULL)
+	boost::signals2::connection	setHandlerFuncFast(const char *name, void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data = NULL);
+	boost::signals2::connection	setHandlerFunc(const char *name, void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data = NULL)
 	{
-		setHandlerFuncFast(LLMessageStringTable::getInstance()->getString(name), handler_func, user_data);
+		return setHandlerFuncFast(LLMessageStringTable::getInstance()->getString(name), handler_func, user_data);
+	}
+
+	boost::signals2::connection	addHandlerFuncFast(const char *name, boost::function<void (LLMessageSystem *msgsystem)> handler_slot);
+	boost::signals2::connection	addHandlerFunc(const char *name, boost::function<void (LLMessageSystem *msgsystem)> handler_slot)
+	{
+		return addHandlerFuncFast(LLMessageStringTable::getInstance()->getString(name), handler_slot);
 	}
 
 	// Set a callback function for a message system exception.
@@ -343,7 +354,7 @@ public:
 	bool addCircuitCode(U32 code, const LLUUID& session_id);
 
 	BOOL	poll(F32 seconds); // Number of seconds that we want to block waiting for data, returns if data was received
-	BOOL	checkMessages(S64 frame_count = 0);
+	BOOL	checkMessages( S64 frame_count = 0, bool faked_message = false, U8 fake_buffer[MAX_BUFFER_SIZE] = NULL, LLHost fake_host = LLHost(), S32 fake_size = 0 );
 	void	processAcks();
 
 	BOOL	isMessageFast(const char *msg);
@@ -586,6 +597,9 @@ public:
 
 	void	showCircuitInfo();
 	void getCircuitInfo(LLSD& info) const;
+	// <edit>
+	LLCircuit* getCircuit();
+	// </edit>
 
 	U32 getOurCircuitCode();
 	
@@ -766,7 +780,13 @@ private:
 	LLUUID mSessionID;
 	
 	void	addTemplate(LLMessageTemplate *templatep);
+// <edit>
+public:
+// </edit>
 	BOOL		decodeTemplate( const U8* buffer, S32 buffer_size, LLMessageTemplate** msg_template );
+// <edit>
+private:
+// </edit>
 
 	void		logMsgFromInvalidCircuit( const LLHost& sender, BOOL recv_reliable );
 	void		logTrustedMsgFromUntrustedCircuit( const LLHost& sender );
@@ -824,12 +844,16 @@ private:
 	S32 mIncomingCompressedSize;		// original size of compressed msg (0 if uncomp.)
 	TPACKETID mCurrentRecvPacketID;       // packet ID of current receive packet (for reporting)
 
+	//<edit>
+public:
 	LLMessageBuilder* mMessageBuilder;
 	LLTemplateMessageBuilder* mTemplateMessageBuilder;
 	LLSDMessageBuilder* mLLSDMessageBuilder;
 	LLMessageReader* mMessageReader;
 	LLTemplateMessageReader* mTemplateMessageReader;
 	LLSDMessageReader* mLLSDMessageReader;
+private:
+	//</edit>
 
 	friend class LLMessageHandlerBridge;
 	

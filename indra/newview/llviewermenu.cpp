@@ -271,7 +271,10 @@
 #include <map>
 
 #include "hippogridmanager.h"
+//<edit>
+#include "llfloaterattachments.h"
 
+//< /edit>
 using namespace LLOldEvents;
 using namespace LLVOAvatarDefines;
 void init_client_menu(LLMenuGL* menu);
@@ -689,6 +692,7 @@ public:
 	~LLMenuParcelObserver();
 	virtual void changed();
 };
+
 class LLToolsFoo : public view_listener_t
 {
     bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -697,6 +701,28 @@ class LLToolsFoo : public view_listener_t
         return true;
     }
 };
+
+class LLAvatarEnableAttachmentList : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
+		return true;
+	}
+};
+
+class LLAvatarAttachmentList : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		LLFloaterAttachments* floater = new LLFloaterAttachments();
+		floater->center();
+		return true;
+	}
+};
+
 static LLMenuParcelObserver* gMenuParcelObserver = NULL;
 
 LLMenuParcelObserver::LLMenuParcelObserver()
@@ -934,11 +960,13 @@ void init_menus()
 	
 	menu->addChild(new LLMenuItemCheckGL("Pose Stand",&handle_toggle_pose, NULL, &handle_check_pose, NULL));
 	menu->addSeparator();
-	menu->addChild(new LLMenuItemCheckGL("God & Advanced Menus",
+	menu->addChild(new LLMenuItemCheckGL("Local Godmode",
 										   &handle_toggle_hacked_godmode,
 										   NULL,
 										   &check_toggle_hacked_godmode,
 										   (void*)"HackedGodmode"));
+	menu->addChild(new LLMenuItemCallGL("Advanced Menu",
+										   &toggle_debug_menus, NULL));
 	//these should always be last in a sub menu
 	menu->createJumpKeys();
 	gMenuBarView->addChild( menu );
@@ -3208,10 +3236,10 @@ class LLAvatarDebug : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		//LLVOAvatar* avatar = find_avatar_from_object( LLSelectMgr::getInstance()->getSelection()->getPrimaryObject() );
-		if (isAgentAvatarValid())
+		LLVOAvatar* avatar = find_avatar_from_object( LLSelectMgr::getInstance()->getSelection()->getPrimaryObject() );
+		if( avatar )
 		{
-			gAgentAvatarp->dumpLocalTextures();
+			avatar->dumpLocalTextures();
 			// <edit> hell no don't tell them about that
 			/*			
 			llinfos << "Dumping temporary asset data to simulator logs for avatar " << avatar->getID() << llendl;
@@ -3221,7 +3249,7 @@ class LLAvatarDebug : public view_listener_t
 			send_generic_message("dumptempassetdata", strings, invoice);
 			*/
 			// </edit>
-			LLFloaterAvatarTextures::show( gAgentAvatarp->getID() );
+			LLFloaterAvatarTextures::show( avatar->getID() );
 		}
 		return true;
 	}
@@ -9669,6 +9697,8 @@ void initialize_menus()
 	addMenu(new LLObjectInspect(), "Object.Inspect");
 	// <dogmode> Visual mute, originally by Phox.
 	addMenu(new LLObjectDerender(), "Object.DERENDER");
+	addMenu(new LLAvatarAttachmentList(), "Avatar.AttachmentList");
+	addMenu(new LLAvatarEnableAttachmentList(), "Avatar.EnableAttachmentList");
 	addMenu(new LLAvatarReloadTextures(), "Avatar.ReloadTextures");
 	addMenu(new LLObjectReloadTextures(), "Object.ReloadTextures");
 	addMenu(new LLObjectExport(), "Object.Export");
@@ -9700,6 +9730,7 @@ void initialize_menus()
 	addMenu(new LLObjectEnableExport(), "Attachment.EnableExport");
 	addMenu(new LLAttachmentEnableDrop(), "Attachment.EnableDrop");
 	addMenu(new LLAttachmentEnableDetach(), "Attachment.EnableDetach");
+	
 
 	// Land pie menu
 	addMenu(new LLLandBuild(), "Land.Build");

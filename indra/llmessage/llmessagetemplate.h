@@ -32,6 +32,9 @@
 #include "llstat.h"
 #include "llstl.h"
 
+#include <boost/signals2.hpp>
+using namespace boost::signals2::keywords;
+
 class LLMsgVarData
 {
 public:
@@ -284,9 +287,9 @@ public:
 		mTotalDecodeTime(0.f),
 		mMaxDecodeTimePerMsg(0.f),
 		mBanFromTrusted(false),
-		mBanFromUntrusted(false),
-		mHandlerFunc(NULL), 
-		mUserData(NULL)
+		mBanFromUntrusted(false)//,
+		//mHandlerFunc(NULL), 
+		//mUserData(NULL)
 	{ 
 		mName = LLMessageStringTable::getInstance()->getString(name);
 	}
@@ -354,18 +357,35 @@ public:
 		return mDeprecation;
 	}
 	
-	void setHandlerFunc(void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data)
+	//legacy support
+	boost::signals2::connection setHandlerFunc(void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data)
 	{
-		mHandlerFunc = handler_func;
-		mUserData = user_data;
+		disconnectAllSlots();
+		if(handler_func)
+			return addHandlerFunc(boost::bind(handler_func,_1,user_data));
+		else //keep behavior of NULL handler_func clear callbacks
+			return boost::signals2::connection();
+	}
+
+	boost::signals2::connection addHandlerFunc(boost::function<void (LLMessageSystem *msgsystem)> handler_slot)
+	{
+		return mMessageSignal.connect(handler_slot);
+	}
+
+	void disconnectAllSlots()
+	{
+		//if mMessageSignal is not empty clear it out.
+		if(!mMessageSignal.empty())
+			mMessageSignal.disconnect_all_slots();
 	}
 
 	BOOL callHandlerFunc(LLMessageSystem *msgsystem) const
 	{
-		if (mHandlerFunc)
+		if (!mMessageSignal.empty())
 		{
             LLPerfBlock msg_cb_time("msg_cb", mName);
-			mHandlerFunc(msgsystem, mUserData);
+			//fire and forget
+			mMessageSignal(msgsystem);
 			return TRUE;
 		}
 		return FALSE;
@@ -414,8 +434,10 @@ public:
 
 private:
 	// message handler function (this is set by each application)
-	void									(*mHandlerFunc)(LLMessageSystem *msgsystem, void **user_data);
-	void									**mUserData;
+	//void									(*mHandlerFunc)(LLMessageSystem *msgsystem, void **user_data);
+	//void									**mUserData;
+	typedef boost::signals2::signal_type<void (LLMessageSystem*), mutex_type<boost::signals2::dummy_mutex> >::type message_signal_t;
+	message_signal_t						mMessageSignal;
 };
 
 #endif // LL_LLMESSAGETEMPLATE_H
