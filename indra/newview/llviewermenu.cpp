@@ -253,6 +253,7 @@
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
 #include "llfloatermessagelog.h"
+#include "llfloatermessagebuilder.h"
 #include "shfloatermediaticker.h"
 #include "llpacketring.h"
 // </edit>
@@ -565,6 +566,7 @@ void handle_phantom_avatar(void*);
 void handle_hide_typing_notification(void*);
 void handle_close_all_notifications(void*);
 void handle_open_message_log(void*);
+void handle_open_message_builder(void*);
 void handle_edit_ao(void*);
 void handle_local_assets(void*);
 void handle_vfs_explorer(void*);
@@ -1217,6 +1219,7 @@ void init_client_menu(LLMenuGL* menu)
 			&handle_viewer_enable_message_log,  NULL));
 		sub->addChild(new LLMenuItemCallGL("Disable Message Log", 
 			&handle_viewer_disable_message_log, NULL));
+		sub->addChild(new LLMenuItemCallGL(  "Message Builder", &handle_open_message_builder, NULL));
 
 		sub->addSeparator();
 
@@ -3854,6 +3857,11 @@ void process_grant_godlike_powers(LLMessageSystem* msg, void**)
 void handle_open_message_log(void*)
 {
 	LLFloaterMessageLog::show();
+}
+
+void handle_open_message_builder(void*)
+{
+	LLFloaterMessageBuilder::show(std::string(""));
 }
 
 void handle_edit_ao(void*)

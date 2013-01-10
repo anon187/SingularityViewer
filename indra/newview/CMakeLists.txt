@@ -79,6 +79,8 @@ set(viewer_SOURCE_FILES
 #edit simms
     llfloaterattachments.cpp
     llfloatertextdump.cpp
+    lleasymessagesender.cpp
+    llfloatermessagebuilder.cpp
 #edit_end
     aoremotectrl.cpp
     ascentfloatercontactgroups.cpp
@@ -592,6 +594,8 @@ set(viewer_HEADER_FILES
 #edit simms
     llfloaterattachments.h
     llfloatertextdump.h
+    lleasymessagesender.h
+    llfloatermessagebuilder.h
 #edit_end
     aoremotectrl.h
     ascentfloatercontactgroups.h
