@@ -109,7 +109,8 @@
 #include "llfloateranimpreview.h" // for reuploads
 #include "llfloaterimagepreview.h" // for reuploads
 //#include "llcheats.h"
-#include "hgfloatertexteditor.h"
+#include "llfloaterhex.h"
+#include "llfloatertexteditor.h"
 #include "statemachine/aifilepicker.h"
 // </edit>
 
@@ -126,7 +127,7 @@
 #include "rlvhandler.h"
 #include "rlvlocks.h"
 // [/RLVa:KB]
-
+extern void wearable_callback(LLWearable* old_wearable, void*); //wearable reupload
 // Marketplace outbox current disabled
 #define ENABLE_MERCHANT_OUTBOX_CONTEXT_MENU	1
 #define ENABLE_MERCHANT_SEND_TO_MARKETPLACE_CONTEXT_MENU 1
@@ -167,6 +168,7 @@ void dec_busy_count()
 }
 
 // Function declarations
+void cmdline_printchat(std::string message);
 void remove_inventory_category_from_avatar(LLInventoryCategory* category);
 void remove_inventory_category_from_avatar_step2( BOOL proceed, LLUUID category_id);
 bool move_task_inventory_callback(const LLSD& notification, const LLSD& response, LLMoveInv*);
@@ -821,11 +823,20 @@ void LLInvFVBridge::getClipboardEntries(bool show_asset_id,
 					is_asset_knowable = LLAssetType::lookupIsAssetIDKnowable(inv_item->getType());
 				}
 				if ( !is_asset_knowable // disable menu item for Inventory items with unknown asset. EXT-5308
-					 || (! ( isItemPermissive() || gAgent.isGodlike() ) )
+					 //|| (! ( isItemPermissive() || gAgent.isGodlike() ) )
 					 || (flags & FIRST_SELECTED_ITEM) == 0)
 				{
 					disabled_items.push_back(std::string("Copy Asset UUID"));
 				}
+			}
+			items.push_back(std::string("Open With..."));
+			const LLInventoryObject* pItem = getInventoryObject();
+			if ( (pItem) &&
+				 ( ((LLAssetType::AT_CALLINGCARD == pItem->getType())) ||
+				   ((LLAssetType::AT_LANDMARK == pItem->getType())) ||
+				   ((LLAssetType::AT_OBJECT == pItem->getType())) ) )
+			{
+				disabled_items.push_back(std::string("Open With..."));
 			}
 			items.push_back(std::string("Copy Separator"));
 
@@ -1505,11 +1516,13 @@ void LLItemBridge::performAction(LLInventoryModel* model, std::string action)
 		// Single item only
 		LLViewerInventoryItem* item = static_cast<LLViewerInventoryItem*>(getItem());
 		if(!item) return;
-		LLUUID asset_id = item->getProtectedAssetUUID();
+		//LLUUID asset_id = item->getProtectedAssetUUID();
+		LLUUID asset_id = item->getAssetUUID();
 		std::string buffer;
 		asset_id.toString(buffer);
 
 		gViewerWindow->getWindow()->copyTextToClipboard(utf8str_to_wstring(buffer));
+		cmdline_printchat(buffer);
 		return;
 	}
 	else if ("cut" == action)
@@ -1557,6 +1570,18 @@ void LLItemBridge::performAction(LLInventoryModel* model, std::string action)
 
 		folder_view_itemp->getListener()->pasteLinkFromClipboard();
 		return;
+	}
+	else if("open hex" == action)
+	{
+		LLInventoryItem* item = model->getItem(mUUID);
+		if(!item) return;
+		LLFloaterHex::show(mUUID);
+	}
+		else if("open text" == action)
+	{
+		LLInventoryItem* item = model->getItem(mUUID);
+		if(!item) return;
+		LLFloaterTextEditor::show(mUUID);
 	}
 	
 	// <edit>

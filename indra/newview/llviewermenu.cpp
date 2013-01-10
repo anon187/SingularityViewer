@@ -249,7 +249,9 @@
 #include "lltexlayer.h"
 
 // <edit>
-#include "hgfloatertexteditor.h"
+#include "llfloaterkeytool.h"
+#include "llfloaterhex.h"
+#include "llfloatertexteditor.h"
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
 #include "llfloatermessagelog.h"
@@ -561,6 +563,7 @@ BOOL handle_check_pose(void* userdata) {
 }
 
 
+void handle_keytool_from_clipboard(void*);
 void handle_force_ground_sit(void*);
 void handle_phantom_avatar(void*);
 void handle_hide_typing_notification(void*);
@@ -927,6 +930,8 @@ void init_menus()
 	menu->addSeparator();
 	menu->addChild(new LLMenuItemCallGL(	"Object Area Search", &handle_area_search, NULL));
 
+	menu->addChild(new LLMenuItemCallGL(  "Clipboard Keytool",
+	&handle_keytool_from_clipboard, NULL, NULL, 'K', MASK_CONTROL | MASK_SHIFT));
 	menu->addChild(new LLMenuItemCallGL(	"Sound Explorer",
 											&handle_sounds_explorer, NULL));
 	menu->addChild(new LLMenuItemCallGL(	"Asset Blacklist",
@@ -3853,6 +3858,15 @@ void process_grant_godlike_powers(LLMessageSystem* msg, void**)
 }
 
 // <edit>
+void handle_keytool_from_clipboard(void*)
+{
+	std::string clipstr = utf8str_trim(wstring_to_utf8str(gClipboard.getPasteWString()));
+	LLUUID key = LLUUID(clipstr);
+	if(key.notNull())
+	{
+		LLFloaterKeyTool::show(key);
+	}
+}
 
 void handle_open_message_log(void*)
 {

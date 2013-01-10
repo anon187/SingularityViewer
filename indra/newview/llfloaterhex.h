@@ -1,27 +1,21 @@
-/**
- * @file hgfloatertexteditor.h
- * @brief Asset Text Editor floater made by Hazim Gazov (based on hex editor floater by Day Oh)
- * @author Hazim Gazov
- * 
- * $LicenseInfo:firstyear=2010&license=WTFPLV2$
- *  
- */
+// <edit>
 
 
-#ifndef HG_HGFLOATERTEXT_H
-#define HG_HGFLOATERTEXT_H
+#ifndef LL_LLFLOATERHEX_H
+#define LL_LLFLOATERHEX_H
 
 #include "llfloater.h"
-#include "lltexteditor.h"
+#include "llhexeditor.h"
 #include "llinventory.h"
 #include "llviewertexture.h"
+#include "llassettype.h"
 
-class HGFloaterTextEditor
+class LLFloaterHex
 : public LLFloater
 {
 public:
-	HGFloaterTextEditor(LLInventoryItem* item);
-	static void show(LLUUID item_id);
+	LLFloaterHex(LLUUID item_id, BOOL vfs=false, LLAssetType::EType asset_type = LLAssetType::AT_NONE);
+	static void show(LLUUID item_id, BOOL vfs=false, LLAssetType::EType asset_type = LLAssetType::AT_NONE);
 	BOOL postBuild(void);
 	void close(bool app_quitting);
 	static void imageCallback(BOOL success, 
@@ -38,13 +32,20 @@ public:
 	static void onClickSave(void* user_data);
 	static void onClickUpload(void* user_data);
 	static void onSaveComplete(const LLUUID& asset_uuid, void* user_data, S32 status, LLExtStat ext_status);
+	static void onCommitColumnCount(LLUICtrl *control, void *user_data);
+	void handleSizing();
+	void readVFile();
 	LLInventoryItem* mItem;
-	LLTextEditor* mEditor;
-	static std::list<HGFloaterTextEditor*> sInstances;
+	LLUUID mAssetId;
+	LLAssetType::EType mAssetType;
+	BOOL mVFS;
+	LLHexEditor* mEditor;
+	static std::list<LLFloaterHex*> sInstances;
 private:
-	virtual ~HGFloaterTextEditor();
+	virtual ~LLFloaterHex();
 protected:
 	static S32 sUploadAmount;
 };
 
 #endif
+// </edit>

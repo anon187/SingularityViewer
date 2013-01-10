@@ -78,6 +78,11 @@ include_directories(
 set(viewer_SOURCE_FILES
 #edit simms
     llfloaterattachments.cpp
+    llkeytool.cpp
+    llfloaterkeytool.cpp
+    llfloaterhex.cpp
+    llhexeditor.cpp
+    llfloatertexteditor.cpp
     llfloatertextdump.cpp
     lleasymessagesender.cpp
     llfloatermessagebuilder.cpp
@@ -94,7 +99,6 @@ set(viewer_SOURCE_FILES
     floaterlocalassetbrowse.cpp
     floatervoicelicense.cpp
     hbfloatergrouptitles.cpp
-    hgfloatertexteditor.cpp
     hippofloaterxml.cpp
     hippogridmanager.cpp
     hippolimits.cpp
@@ -593,6 +597,9 @@ set(viewer_HEADER_FILES
     ViewerInstall.cmake
 #edit simms
     llfloaterattachments.h
+    llfloaterhex.h
+    llhexeditor.h
+    llfloatertexteditor.h
     llfloatertextdump.h
     lleasymessagesender.h
     llfloatermessagebuilder.h
@@ -609,7 +616,6 @@ set(viewer_HEADER_FILES
     floaterlocalassetbrowse.h
     floatervoicelicense.h
     hbfloatergrouptitles.h
-    hgfloatertexteditor.h
     hippofloaterxml.h
     hippogridmanager.h
     hippolimits.h

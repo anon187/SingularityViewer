@@ -1,17 +1,8 @@
-/**
- * @file hgfloatertexteditor.cpp
- * @brief Asset Text Editor floater made by Hazim Gazov (based on hex editor floater by Day Oh)
- * @author Hazim Gazov
- * 
- * $LicenseInfo:firstyear=2010&license=WTFPLV2$
- *  
- */
 
-// <edit>
 
 #include "llviewerprecompiledheaders.h"
 
-#include "hgfloatertexteditor.h"
+#include "llfloatertexteditor.h"
 #include "lluictrlfactory.h"
 #include "llinventorybackup.h" // for downloading
 #include "llviewercontrol.h" // gSavedSettings
@@ -26,10 +17,10 @@
 #include "lllocalinventory.h"
 #include "llnotificationsutil.h"
 
-std::list<HGFloaterTextEditor*> HGFloaterTextEditor::sInstances;
-S32 HGFloaterTextEditor::sUploadAmount = 10;
+std::list<LLFloaterTextEditor*> LLFloaterTextEditor::sInstances;
+S32 LLFloaterTextEditor::sUploadAmount = 10;
 
-HGFloaterTextEditor::HGFloaterTextEditor(LLInventoryItem* item)
+LLFloaterTextEditor::LLFloaterTextEditor(LLInventoryItem* item)
 :	LLFloater()
 {
 	sInstances.push_back(this);
@@ -38,7 +29,7 @@ HGFloaterTextEditor::HGFloaterTextEditor(LLInventoryItem* item)
 }
 
 // static
-void HGFloaterTextEditor::show(LLUUID item_id)
+void LLFloaterTextEditor::show(LLUUID item_id)
 {
 	LLInventoryItem* item = (LLInventoryItem*)gInventory.getItem(item_id);
 	if(item)
@@ -47,23 +38,23 @@ void HGFloaterTextEditor::show(LLUUID item_id)
 		gFloaterView->getNewFloaterPosition(&left, &top);
 		LLRect rect = gSavedSettings.getRect("FloaterAssetTextEditorRect");
 		rect.translate(left - rect.mLeft, top - rect.mTop);
-		HGFloaterTextEditor* floaterp = new HGFloaterTextEditor(item);
+		LLFloaterTextEditor* floaterp = new LLFloaterTextEditor(item);
 		floaterp->setRect(rect);
 		gFloaterView->adjustToFitScreen(floaterp, FALSE);
 	}
 }
 
-HGFloaterTextEditor::~HGFloaterTextEditor()
+LLFloaterTextEditor::~LLFloaterTextEditor()
 {
 	sInstances.remove(this);
 }
 
-void HGFloaterTextEditor::close(bool app_quitting)
+void LLFloaterTextEditor::close(bool app_quitting)
 {
 	LLFloater::close(app_quitting);
 }
 
-BOOL HGFloaterTextEditor::postBuild(void)
+BOOL LLFloaterTextEditor::postBuild(void)
 {
 	LLTextEditor* editor = getChild<LLTextEditor>("text_editor");
 	mEditor = editor;
@@ -102,7 +93,7 @@ BOOL HGFloaterTextEditor::postBuild(void)
 }
 
 // static
-void HGFloaterTextEditor::imageCallback(BOOL success, 
+void LLFloaterTextEditor::imageCallback(BOOL success, 
 					LLViewerFetchedTexture *src_vi,
 					LLImageRaw* src, 
 					LLImageRaw* aux_src, 
@@ -113,7 +104,7 @@ void HGFloaterTextEditor::imageCallback(BOOL success,
 	if(final)
 	{
 		LLInventoryBackup::callbackdata* data = static_cast<LLInventoryBackup::callbackdata*>(userdata);
-		HGFloaterTextEditor* floater = (HGFloaterTextEditor*)(data->floater);
+		LLFloaterTextEditor* floater = (LLFloaterTextEditor*)(data->floater);
 		if(!floater) return;
 		if(std::find(sInstances.begin(), sInstances.end(), floater) == sInstances.end()) return; // no more crash
 		//LLInventoryItem* item = data->item;
@@ -147,13 +138,13 @@ void HGFloaterTextEditor::imageCallback(BOOL success,
 }
 
 // static
-void HGFloaterTextEditor::assetCallback(LLVFS *vfs,
+void LLFloaterTextEditor::assetCallback(LLVFS *vfs,
 				   const LLUUID& asset_uuid,
 				   LLAssetType::EType type,
 				   void* user_data, S32 status, LLExtStat ext_status)
 {
 	LLInventoryBackup::callbackdata* data = static_cast<LLInventoryBackup::callbackdata*>(user_data);
-	HGFloaterTextEditor* floater = (HGFloaterTextEditor*)(data->floater);
+	LLFloaterTextEditor* floater = (LLFloaterTextEditor*)(data->floater);
 	if(!floater) return;
 	if(std::find(sInstances.begin(), sInstances.end(), floater) == sInstances.end()) return; // no more crash
 	LLInventoryItem* item = data->item;
@@ -233,9 +224,9 @@ void HGFloaterTextEditor::assetCallback(LLVFS *vfs,
 }
 
 // static
-void HGFloaterTextEditor::onClickUpload(void* user_data)
+void LLFloaterTextEditor::onClickUpload(void* user_data)
 {
-	HGFloaterTextEditor* floater = (HGFloaterTextEditor*)user_data;
+	LLFloaterTextEditor* floater = (LLFloaterTextEditor*)user_data;
 	LLInventoryItem* item = floater->mItem;
 
 	LLTransactionID transaction_id;
@@ -298,19 +289,19 @@ void HGFloaterTextEditor::onClickUpload(void* user_data)
 
 struct LLSaveInfo
 {
-	LLSaveInfo(HGFloaterTextEditor* floater, LLTransactionID transaction_id)
+	LLSaveInfo(LLFloaterTextEditor* floater, LLTransactionID transaction_id)
 		: mFloater(floater), mTransactionID(transaction_id)
 	{
 	}
 
-	HGFloaterTextEditor* mFloater;
+	LLFloaterTextEditor* mFloater;
 	LLTransactionID mTransactionID;
 };
 
 // static
-void HGFloaterTextEditor::onClickSave(void* user_data)
+void LLFloaterTextEditor::onClickSave(void* user_data)
 {
-	HGFloaterTextEditor* floater = (HGFloaterTextEditor*)user_data;
+	LLFloaterTextEditor* floater = (LLFloaterTextEditor*)user_data;
 	LLInventoryItem* item = floater->mItem;
 
 	LLTransactionID transaction_id;
@@ -369,10 +360,10 @@ void HGFloaterTextEditor::onClickSave(void* user_data)
 	}
 }
 
-void HGFloaterTextEditor::onSaveComplete(const LLUUID& asset_uuid, void* user_data, S32 status, LLExtStat ext_status)
+void LLFloaterTextEditor::onSaveComplete(const LLUUID& asset_uuid, void* user_data, S32 status, LLExtStat ext_status)
 {
 	LLSaveInfo* info = (LLSaveInfo*)user_data;
-	HGFloaterTextEditor* floater = info->mFloater;
+	LLFloaterTextEditor* floater = info->mFloater;
 	if(std::find(sInstances.begin(), sInstances.end(), floater) == sInstances.end()) return; // no more crash
 	LLInventoryItem* item = floater->mItem;
 
